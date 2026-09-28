@@ -29,13 +29,21 @@
   // GitHub Pages has no routing, so every path this site does not serve lands
   // here; the path itself is the request. Some clients send the colon encoded.
   var path = location.pathname.replace(/^\/ip%3A/i, '/ip:');
-  var route = /^\/ip(?::([0-9]{1,5}))?(\/.*)?$/i.exec(path);
+  // The port is required. Port 80 on the Pi is the test platform, and a bare
+  // /ip landing people there by default was not wanted; nothing opens unless
+  // the port is named.
+  if (/^\/ip(\/.*)?$/i.test(path)) {
+    title.textContent = 'Which port?';
+    status.textContent = 'Name the port after the address, for example /ip:4011.';
+    return;
+  }
+  var route = /^\/ip:([0-9]{1,5})(\/.*)?$/i.exec(path);
   if (!route) {
     title.textContent = 'Nothing at this address';
     status.textContent = 'This site only forwards to the Pi.';
     return;
   }
-  var port = route[1] || '80';
+  var port = route[1];
   if (+port < 1 || +port > 65535) {
     title.textContent = 'Not a port';
     status.textContent = port + ' is outside 1 to 65535.';

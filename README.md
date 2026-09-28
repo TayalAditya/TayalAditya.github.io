@@ -5,7 +5,8 @@ wherever DHCP has put it today.
 
 - `/ip:4011` goes to `http://<pi>:4011/` (nginx there upgrades to https).
 - `/ip:8080/login?x=1` keeps the path, query and fragment.
-- `/ip` alone is port 80. `?stay` shows the address without redirecting.
+- The port is required: `/ip` alone, and any other path, opens nothing.
+- `?stay` shows the address without redirecting.
 
 The Pi's address is not stored here. `404.html` reads it at request time from
 the two pages the Pi already publishes on the same origin,
