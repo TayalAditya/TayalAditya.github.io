@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pi redirect</title>
+<style>
+  body { margin: 0; padding: 2rem 1.5rem; font: 16px/1.5 "IBM Plex Sans", system-ui, sans-serif; color: #1f2937; background: #f7f7f5; }
+  main { max-width: 36rem; margin: 0 auto; }
+  h1 { font-size: 1.25rem; margin: 0 0 0.5rem; }
+  p { margin: 0.5rem 0; }
+  a { color: #0b3d91; }
+  code { font: 15px/1.4 "IBM Plex Mono", ui-monospace, monospace; }
+  small { color: #6b7280; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Finding the Pi</h1>
+  <p id="status">Reading the Pi's current address.</p>
+  <p><small>Open <code>tayaladitya.github.io/ip:PORT</code> to reach the Pi on that port, for example <code>/ip:4011</code> for the leave portal. Anything after the port, such as <code>/ip:8080/login</code>, is carried across. Add <code>?stay</code> to read the address without being redirected. The Pi is on the institute network, so the link works from the campus WiFi only.</small></p>
+</main>
+<script>
+(function () {
+  var title = document.getElementById('title');
+  var status = document.getElementById('status');
+
+  // GitHub Pages has no routing, so every path this site does not serve lands
+  // here; the path itself is the request. Some clients send the colon encoded.
+  var path = location.pathname.replace(/^\/ip%3A/i, '/ip:');
+  var route = /^\/ip(?::([0-9]{1,5}))?(\/.*)?$/i.exec(path);
+  if (!route) {
+    title.textContent = 'Nothing at this address';
+    status.textContent = 'This site only forwards to the Pi.';
+    return;
+  }
+  var port = route[1] || '80';
+  if (+port < 1 || +port > 65535) {
+    title.textContent = 'Not a port';
+    status.textContent = port + ' is outside 1 to 65535.';
+    return;
+  }
+  var rest = route[2] || '/';
+  var query = new URLSearchParams(location.search);
+  var stay = query.has('stay');
+  query.delete('stay');
+  var qs = query.toString();
+
+  // The Pi's address is handed out by DHCP and moves. Two jobs on the Pi push
+  // it to Pages whenever it changes: tp-live and flp-live, both served from
+  // this same origin. Each publishes only on a change, so whichever published
+  // last saw the latest move, and reading both keeps this working while either
+  // one has stopped.
+  var IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
+  var sources = [
+    { url: '/tp-live/address.json', read: function (text) {
+      var json = JSON.parse(text);
+      return { address: json.address, published: json.published };
+    } },
+    { url: '/flp-live/index.html', read: function (text) {
+      var address = /url=https?:\/\/([0-9.]+)[:\/]/.exec(text);
+      var published = /Address published ([0-9-]+ [0-9:]+ UTC)/.exec(text);
+      return { address: address && address[1], published: published && published[1] };
+    } }
+  ];
+
+  Promise.all(sources.map(function (source) {
+    // Pages answers with max-age=600; a unique query gets past both the
+    // browser's cache and the CDN's, so a fresh move is seen at once.
+    return fetch(source.url + '?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (response) { return response.ok ? response.text() : Promise.reject(); })
+      .then(source.read)
+      .catch(function () { return null; });
+  })).then(function (found) {
+    var best = found
+      .filter(function (f) { return f && IPV4.test(f.address || ''); })
+      // "YYYY-MM-DD HH:MM UTC" sorts as text.
+      .sort(function (a, b) { return (b.published || '').localeCompare(a.published || ''); })[0];
+    if (!best) {
+      title.textContent = 'Address unknown';
+      status.innerHTML = 'Neither <a href="/tp-live/?stay">tp-live</a> nor <a href="/flp-live/">flp-live</a> has a readable address. Check that the Pi is on and its publishing timers are running.';
+      return;
+    }
+    var scheme = port === '443' ? 'https' : 'http';
+    var authority = best.address + (port === '80' || port === '443' ? '' : ':' + port);
+    var target = scheme + '://' + authority + rest + (qs ? '?' + qs : '') + location.hash;
+
+    title.textContent = 'Taking you to the Pi';
+    status.innerHTML = '';
+    var link = document.createElement('a');
+    link.href = target;
+    link.textContent = target;
+    status.appendChild(document.createTextNode('Going to '));
+    status.appendChild(link);
+    status.appendChild(document.createTextNode('. The Pi is at ' + best.address +
+      (best.published ? ' (published ' + best.published + ').' : '.')));
+    if (!stay) location.replace(target);
+  });
+})();
+</script>
+</body>
+</html>
