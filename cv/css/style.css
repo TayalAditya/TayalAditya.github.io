@@ -314,6 +314,14 @@ b, strong { font-weight: 700; }
 .xp .acc__inner li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
 .xp .acc__inner p { padding: 4px 0 6px; opacity: .88; }
 .acc__stack { color: var(--mute); padding: 10px 0 26px !important; opacity: 1 !important; }
+.xp .acc__lead { font-size: clamp(17px, 1.5vw, 21px); line-height: 1.4; opacity: 1 !important; padding-top: 6px; }
+.acc__nums { display: flex; flex-wrap: wrap; gap: 0; margin: 14px 0 6px; border-block: 1px solid var(--line); }
+.xp .acc__inner .acc__nums { padding: 0; display: flex; max-width: none; width: fit-content; }
+.xp .acc__inner .acc__nums li { padding: 12px 22px 12px 0; margin-right: 22px; border-right: 1px solid var(--line); opacity: 1; display: grid; gap: 2px; color: var(--mute); }
+.xp .acc__inner .acc__nums li:last-child { border-right: 0; margin-right: 0; }
+.xp .acc__inner .acc__nums li::before { content: none; }
+.acc__nums b { font-family: "Archivo", sans-serif; font-size: clamp(22px, 2.2vw, 32px); font-weight: 800; color: var(--fg); letter-spacing: 0; text-transform: none; line-height: 1; }
+.acc__group { color: var(--accent); font-weight: 500; margin: 18px 0 2px; }
 @media (min-width: 900px) {
   .xp__row { grid-template-columns: 190px minmax(0, 1.35fr) minmax(0, .85fr) 28px; align-items: center; padding: 26px 0; }
   .xp__date, .xp__co, .xp__role { grid-column: auto; }

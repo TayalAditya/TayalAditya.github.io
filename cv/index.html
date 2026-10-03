@@ -247,13 +247,32 @@
           <span class="xp__date mono">Apr 2026 – now</span><span class="xp__co">Koha Consultants</span><span class="xp__role">Software Developer Intern — InstaFarms &amp; MagoStays</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
+          <p class="acc__lead">Full-stack engineer on a two-brand villa and farmstay booking platform: a TypeScript backend, an admin panel, two customer sites and a host mobile app.</p>
+          <ul class="acc__nums mono"><li><b>490+</b>commits</li><li><b>~170</b>API endpoints</li><li><b>52</b>SQL migrations</li><li><b>~900</b>test cases</li></ul>
+          <h4 class="acc__group mono">Invoicing &amp; finance</h4>
           <ul>
-            <li>Ship full-stack features across <b>5 production codebases</b> of a villa and farmstay booking platform that runs two brands: a TypeScript Turborepo backend, two Next.js 15 customer sites, an admin panel and an Expo host app. <b>485 commits</b>.</li>
-            <li>Built the owner-payments stack end to end: Razorpay Route onboarding, a host wallet, RazorpayX payouts, penny-drop bank verification and owner KYC.</li>
-            <li>Built the invoice engine: exactly-once serial numbering, maker-checker corrections, a Zoho Books outbox and GST / TCS / TDS logic across 4 owner agreement models.</li>
-            <li>Integrated channel partner Elivaas and cut availability-calendar API calls from <b>60 to 2</b>; shipped OTA cancellation and a per-room Resort property type across all 5 apps.</li>
+            <li>Invoice engine with per-financial-year serial numbers from row-locked counters and exactly-once issuance through an append-only event trail.</li>
+            <li>Maker-checker corrections: an independent checker approves, then credit notes, debit notes or reissues run through the same serial pipeline in one transaction.</li>
+            <li>Finance Correction Mode: a no-write dry run classifies every booking, then each is reversed and replayed in its own sub-transaction; closed periods get append-only deltas.</li>
+            <li>GST, TCS and TDS across 4 owner agreement models, verified by a <b>128-case parameterised test</b>; a transactional outbox to the accounting system with hash-bound idempotency keys.</li>
           </ul>
-          <p class="mono acc__stack">Hono · zod-openapi · Drizzle · PostgreSQL · Next.js · Expo · Razorpay · Playwright</p>
+          <h4 class="acc__group mono">Payments &amp; payouts</h4>
+          <ul>
+            <li>Owner payouts on Razorpay Route and RazorpayX: rows saved before the network call double as idempotency keys, webhooks are ordered by event time, a reconciliation sweep and guarded retries prevent double payment.</li>
+            <li>Host wallet with a lock that serialises payouts and withdrawals; penny-drop bank verification with name matching, and owner KYC.</li>
+          </ul>
+          <h4 class="acc__group mono">Bookings &amp; inventory</h4>
+          <ul>
+            <li>OTA booking and cancellation: a no-write preview, an atomic cancel and audited admin overrides.</li>
+            <li>A per-room Resort property type across all 5 apps; unified three availability implementations into one rule and closed <b>24 catalogued edge cases</b>.</li>
+            <li>A channel partner's inventory: hourly sync, pay-then-book with HMAC checks, a retry state machine with refund fallback, and <b>60 → 2</b> API calls per calendar.</li>
+          </ul>
+          <h4 class="acc__group mono">Apps &amp; quality</h4>
+          <ul>
+            <li>React Native host app (wallet, payout onboarding, room picker); a plain-language invoice test lab for non-technical testers; admin TypeScript errors cut from <b>62 to 0</b>.</li>
+            <li>SQL validated inside rolled-back transactions on staging, real-database suites and Playwright end-to-end runs.</li>
+          </ul>
+          <p class="mono acc__stack">TypeScript · Hono · Drizzle · PostgreSQL · Next.js 15 · React Native · Razorpay · Vitest · Playwright</p>
         </div></div>
       </div>
 
@@ -262,12 +281,19 @@
           <span class="xp__date mono">Dec 2025 – Jun 2026</span><span class="xp__co">WattCycle</span><span class="xp__role">AI/ML Engineer Intern — solar monitoring</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
+          <p class="acc__lead">ML and full stack on WattCycle Atlas, a solar-plant monitoring platform. I wrote its Python ML service.</p>
+          <ul class="acc__nums mono"><li><b>5,900</b>lines of ML service</li><li><b>17</b>pull requests</li><li><b>13</b>forecast horizons</li><li><b>87</b>tests</li></ul>
+          <h4 class="acc__group mono">Detection &amp; forecasting</h4>
           <ul>
-            <li>Seven months across full stack and ML on WattCycle Atlas, a solar-plant monitoring platform: ingestion, API, forecasting, dashboard and deployment.</li>
-            <li>Fault detection and energy forecasting with Isolation Forest, LSTM and a Prophet + XGBoost ensemble across <b>13 forecast horizons</b> on <b>50+ engineered features</b>.</li>
-            <li>MLOps with MLflow and automated retraining; real-time inference over FastAPI with Kafka streaming; idempotent writes and provenance labels on every metric.</li>
+            <li>5 rule-based plant-health checks with severity tiers plus an Isolation Forest detector over 12 features; open faults de-duplicated within 24 hours.</li>
+            <li>A 13-horizon forecaster that picks XGBoost, a Prophet + XGBoost ensemble or Prophet by horizon, on 34 engineered features; LSTM and MLflow tracking prepared for rollout.</li>
           </ul>
-          <p class="mono acc__stack">Python · TensorFlow · XGBoost · Prophet · MLflow · FastAPI · Kafka</p>
+          <h4 class="acc__group mono">Backend &amp; platform</h4>
+          <ul>
+            <li>TimescaleDB aggregation tables, concurrently refreshed materialised views, 7 role-protected endpoints, 3 cron jobs and idempotent upserts.</li>
+            <li>Replaced random chart placeholders with sourced values and a 15-category metrics spec; moved the monorepo to pnpm workspaces with Dockerised services and CI caching.</li>
+          </ul>
+          <p class="mono acc__stack">Python · FastAPI · scikit-learn · XGBoost · Prophet · TimescaleDB · Node.js · Docker</p>
         </div></div>
       </div>
 
@@ -276,25 +302,32 @@
           <span class="xp__date mono">Oct 2025 – Apr 2026</span><span class="xp__co">Garudakshak</span><span class="xp__role">Full Stack Developer Intern — counter-UAV defence</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
+          <p class="acc__lead">Created and solely developed the operator console for a counter-drone sensing system, from an empty repository to production releases.</p>
+          <ul class="acc__nums mono"><li><b>91</b>API routes</li><li><b>68</b>releases</li><li><b>72</b>permission-gated routes</li><li><b>10</b>DB migrations</li></ul>
           <ul>
-            <li>Took a Windows control-and-monitoring app (Tauri v2 + Rust, React, TypeScript) from <b>zero to MVP</b> for a counter-drone system: sensor feeds, cameras and detection pipelines.</li>
-            <li>Go API gateway with <b>30+ endpoints</b> and Keycloak SSO; a real-time WebSocket dashboard streaming optical, acoustic and RF sensor data.</li>
-            <li>A Raspberry Pi sensor and camera service that recovers from disconnects and restarts on its own.</li>
+            <li>Tauri v2 desktop app: the Rust shell health-checks and launches a Go API and a Python ML service behind a React + TypeScript UI.</li>
+            <li>Go API gateway grown from 8 to 91 routes, with rate limiting, security headers, Prometheus metrics, Redis caching and graceful shutdown.</li>
+            <li>Keycloak SSO with a local-JWT fallback and capability-based permissions; a WebSocket hub streaming detection, incident and device events to live dashboards and maps.</li>
+            <li>A camera-capture watchdog with backoff, hot-swap without stopping detection, and systemd-supervised services on Raspberry Pi 5; CI-built Windows and ARM64 releases.</li>
           </ul>
-          <p class="mono acc__stack">Tauri · Rust · Go · React · WebSockets · PostgreSQL · Docker</p>
+          <p class="mono acc__stack">Tauri · Rust · Go · React · TypeScript · PostgreSQL · TimescaleDB · Redis · Keycloak · ONNX Runtime</p>
         </div></div>
       </div>
 
       <div class="xp__item acc">
         <button class="xp__row acc__trigger" type="button" aria-expanded="false">
-          <span class="xp__date mono">Sep 2025 – Jun 2026</span><span class="xp__co">Strive Partners</span><span class="xp__role">Lead Developer Intern — Hunt</span><span class="xp__plus" aria-hidden="true"></span>
+          <span class="xp__date mono">Sep 2025 – Jun 2026</span><span class="xp__co">Strive Partners</span><span class="xp__role">Lead Developer Intern — Strive Hunt</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
+          <p class="acc__lead">Lead developer of Strive Hunt, a hiring platform with a candidate portal, an employer portal and an internal applicant-tracking system.</p>
+          <ul class="acc__nums mono"><li><b>1,000+</b>commits</li><li><b>39</b>pages</li><li><b>3</b>product modules</li><li><b>16</b>search filters</li></ul>
           <ul>
-            <li>Led backend development: Django and PostgreSQL services on AWS (EC2, RDS, S3), later moved to DigitalOcean, with Redis caching and SMTP notifications.</li>
-            <li>Secure REST APIs for the React frontend; owned <b>3 product modules</b> end to end.</li>
+            <li>ATS with role-based access, a spreadsheet-style candidate grid with autosave and a status pipeline, Excel bulk import with column mapping, soft delete and an audit log.</li>
+            <li>Real-time collaboration over WebSockets with backoff reconnects and heartbeats; boolean candidate search; an interview scheduler with a calendar view.</li>
+            <li>One API interceptor for JWT refresh, timeouts, retries and CSRF; XSS sanitising, inactivity timeouts, Google sign-in and email OTP.</li>
+            <li>Integrated the Django REST API on AWS; shipped on Vercel and as a hardened Docker image with container smoke tests and vulnerability scans in CI.</li>
           </ul>
-          <p class="mono acc__stack">Django · PostgreSQL · Redis · AWS · DigitalOcean · React</p>
+          <p class="mono acc__stack">JavaScript · React · TypeScript · Vite · TanStack Query · WebSockets · Django REST · AWS · Docker</p>
         </div></div>
       </div>
 
