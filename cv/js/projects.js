@@ -7,7 +7,7 @@ window.CV_PROJECTS = [
     desc: 'A browser electronics bench. Solves the circuit by nodal analysis every frame (diodes, transistors, relays, a working 555 timer) and runs Arduino C++ translated to JavaScript, with Servo, LCD, DHT and RFID stubs. ~72 parts, 11 missions.',
     stack: 'JavaScript · Canvas · nginx' },
   { y: '2026', name: 'Simulation Lab & NCERT Sim', ctx: 'Solo · Atal Tinkering Lab', cats: 'institute build',
-    desc: '23 Class 9–12 physics and chemistry experiments and 26 NCERT Class 11–12 physics practicals, each a live lab record with graphs and an everyday scene.',
+    desc: '23 Class 9-12 physics and chemistry experiments and 26 NCERT Class 11-12 physics practicals, each a live lab record with graphs and an everyday scene.',
     stack: 'JavaScript · Docker' },
   { y: '2026', name: 'Faculty Leave Portal', ctx: 'Solo · Dean of Faculty Affairs', cats: 'institute build',
     desc: 'Phase 1 of faculty leave management from the institute PRD. Balances derived from an append-only ledger, triggers that refuse edits, two-phase hold and debit, real service rules. 324 requirements traced, 321 tests.',
@@ -103,7 +103,7 @@ window.CV_PROJECTS = [
     desc: 'A fraud-risk scorer for investment pitches, built in 48 hours.',
     stack: 'MERN · Socket.IO · Redis', link: 'https://github.com/TayalAditya/SecureInvest-AI' },
   { y: '2025', name: 'Adobe India Hackathon', ctx: 'Team leader · Round 2', cats: 'hack ml',
-    desc: 'Multilingual PDF outline extraction in an offline, CPU-only Docker image, and persona-aware section ranking across 7 PDFs in 30–45 s.',
+    desc: 'Multilingual PDF outline extraction in an offline, CPU-only Docker image and persona-aware section ranking across 7 PDFs in 30-45 s.',
     stack: 'PyMuPDF · MiniLM · Docker', link: 'https://github.com/TayalAditya/Adobe-TKK-Challenge1a' },
   { y: '2025', name: 'DyslexoFly', ctx: 'Team of 2 · Code for Bharat S2', cats: 'hack build',
     desc: 'Turns PDFs and documents into dyslexia-friendly reading: OpenDyslexic, English and Hindi summaries, audio in 7 neural voices.',
@@ -134,7 +134,7 @@ window.CV_PROJECTS = [
     stack: 'ESP32 · ROS · EasyEDA' }
 ];
 
-// One animation per project, keyed by name. m = motif (motifs.js, or a selected-work cover), p = its params.
+// One animation per project, keyed by name. m = motif (motifs.js or a selected-work cover), p = its params.
 window.CV_ANIMS = {
   'IIT Mandi LaTeX': { m: 'queue', p: { title: 'COMPILE QUEUE', right: 'CAP 50', cap: 50 } },
   'TinkerBench': { m: 'circuit', p: { title: 'TINKERBENCH', right: 'NODAL SOLVE / FRAME' } },
@@ -151,7 +151,7 @@ window.CV_ANIMS = {
   'GBNet improvements': { m: 'bars', p: { title: 'GBNET · 6 DATASETS × 7 METRICS', right: '42 / 42', count: 42 } },
   'PurrPedia': { m: 'cards', p: { title: 'PURRPEDIA', right: '247 BREEDS', cols: 4, labels: ['Bengal', 'Siamese', 'Maine Coon', 'Persian', 'Sphynx', 'Ragdoll', 'Abyssinian', 'Bombay'] } },
   'FlowAI': { m: 'agents', p: { title: 'FLOWAI · GEMINI AGENTS', right: '5 AGENTS', nodes: ['DUMP', 'SPLIT', 'PLAN', 'WATCH', 'REMIND'],
-    steps: ['Brain dump captured', 'Goal split into 3–7 subtasks', 'Subtasks scheduled', 'Progress watched', 'Reminder sent'] } },
+    steps: ['Brain dump captured', 'Goal split into 3-7 subtasks', 'Subtasks scheduled', 'Progress watched', 'Reminder sent'] } },
   'SevaVoice': { m: 'wave', p: { title: 'SEVAVOICE', right: '14 LANGUAGES', labels: ['हिन्दी', 'ಕನ್ನಡ', 'தமிழ்', 'తెలుగు', 'বাংলা', 'मराठी', 'ગુજરાતી', 'English'] } },
   'Vidyut AI': { m: 'chat', p: { title: 'VIDYUT AI', right: 'CITED ANSWERS', items: [
     { q: 'Steps before servicing a conveyor?', a: ['ANSWER · CITED', 'Isolate energy, lock and tag out,', 'then verify zero energy.'], rows: ['SOURCE', 'OSHA 1910.147'] },

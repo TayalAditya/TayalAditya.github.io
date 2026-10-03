@@ -295,7 +295,7 @@
     } };
   };
 
-  // Agents passing work along: nodes, a travelling message, and the current step underneath.
+  // Agents passing work along: nodes, a travelling message and the current step underneath.
   M.agents = function (p) {
     var nodes = p.nodes, n = nodes.length, hub = p.layout === 'hub';
     return { draw: function (ctx, w, h, t) {
@@ -434,7 +434,7 @@
     } };
   };
 
-  // A scanner working down a list, or a risk gauge built from several checks.
+  // A scanner working down a list or a risk gauge built from several checks.
   M.scan = function (p) {
     return { draw: function (ctx, w, h, t) {
       var c = C(); bg(ctx, w, h); head(ctx, w, p.title, p.right);
@@ -491,7 +491,7 @@
     } };
   };
 
-  // Detection overlays: faces with engagement, real/fake tiles, or a live blur map.
+  // Detection overlays: faces with engagement, real/fake tiles or a live blur map.
   M.detect = function (p) {
     var r = rng(p.seed || 17), tiles = [];
     for (var i = 0; i < 8; i++) tiles.push({ fake: r() < .45, conf: .7 + r() * .29, k: r() * 10 });

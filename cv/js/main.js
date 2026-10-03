@@ -86,6 +86,7 @@
       idxCount.textContent = shown.length;
       if (anim) {
         gsap.fromTo(shown.slice(0, 18), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out', stagger: .025, overwrite: true });
+        gsap.set(shown.slice(18), { opacity: 1, y: 0 });
         ScrollTrigger.refresh();
       }
     });
@@ -112,7 +113,7 @@
   $$('[data-copy]').forEach(function (b) {
     b.addEventListener('click', function () {
       var text = b.dataset.copy;
-      var done = function () { say('Copied — ' + text); };
+      var done = function () { say('Copied: ' + text); };
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, function () { location.href = 'mailto:' + text; });
       else location.href = 'mailto:' + text;
     });
@@ -214,10 +215,28 @@
     .to(['.nav', '.hero__coords'], { opacity: 1, duration: .8, ease: 'power2.out' }, 2.2)
     .add(function () { if (lenis) lenis.start(); ScrollTrigger.refresh(); }, 2.2);
 
-  // ---------- reveals ----------
-  $$('[data-reveal]').forEach(function (el) {
-    if (el.closest('.hero')) return;
-    gsap.to(el, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+  // ---------- reveals: items that enter together cascade in ----------
+  ScrollTrigger.batch($$('[data-reveal], .chips li, .prow').filter(function (el) { return !el.closest('.hero'); }), {
+    start: 'top 92%', once: true, interval: .12,
+    onEnter: function (els) { gsap.to(els, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', stagger: .07, overwrite: true }); }
+  });
+
+  // ---------- section rules draw across as each heading arrives ----------
+  $$('.sec-head').forEach(function (h) {
+    gsap.to(h, { '--draw': 1, duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: h, start: 'top 92%', once: true } });
+  });
+
+  // ---------- the photo wipes in, then drifts slightly as you scroll ----------
+  var photo = $('.lead__photo');
+  if (photo) {
+    gsap.to(photo, { clipPath: 'inset(0% 0 0 0)', duration: 1.3, ease: 'expo.inOut', scrollTrigger: { trigger: photo, start: 'top 85%', once: true } });
+    gsap.fromTo(photo.querySelector('img'), { yPercent: -4 }, { yPercent: 4, ease: 'none', scrollTrigger: { trigger: photo, start: 'top bottom', end: 'bottom top', scrub: true } });
+  }
+
+  // ---------- nav highlights the section you are in ----------
+  $$('.nav__links a').forEach(function (a) {
+    var sec = $(a.getAttribute('href')); if (!sec) return;
+    ScrollTrigger.create({ trigger: sec, start: 'top 45%', end: 'bottom 45%', onToggle: function (st) { a.classList.toggle('is-current', st.isActive); } });
   });
   $$('[data-split]').forEach(function (el) {
     var words = splitWords(el, 'w', 'wi');
