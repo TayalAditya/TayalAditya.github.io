@@ -9,6 +9,7 @@
   var hasGSAP = !!(window.gsap && window.ScrollTrigger);
   var anim = root.classList.contains('anim') && hasGSAP && !reduce;
   window.__cvReady = true;
+  window.scrollTo(0, 0);
   if (!anim) root.classList.remove('anim');
 
   // ---------- theme + palette ----------
@@ -177,6 +178,8 @@
 
   // ================= motion from here on =================
   gsap.registerPlugin(ScrollTrigger);
+  if (ScrollTrigger.clearScrollMemory) ScrollTrigger.clearScrollMemory('manual');
+  window.scrollTo(0, 0);
 
   // smooth scroll
   if (window.Lenis) {

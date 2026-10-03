@@ -443,6 +443,18 @@ b, strong { font-weight: 700; }
 }
 @media (hover: hover) { .aw__row:hover { padding-left: 18px; } }
 
+.certs__title { color: var(--accent); font-weight: 500; margin: clamp(48px, 7vw, 96px) 0 14px; }
+.certs { border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr; }
+.certs li { display: grid; grid-template-columns: 1fr auto; gap: 4px 18px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.certs li > span:first-child { grid-column: 1 / -1; color: var(--mute); }
+.certs b { font-weight: 700; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.25; }
+.certs li > span:last-child { color: var(--mute); }
+@media (min-width: 900px) {
+  .certs { grid-template-columns: 1fr 1fr; column-gap: 40px; }
+  .certs li { grid-template-columns: 200px 1fr auto; }
+  .certs li > span:first-child { grid-column: auto; }
+}
+
 /* ---------- toolbox ---------- */
 .tools__grid { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--line); }
 .tool { padding: 22px 0; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }

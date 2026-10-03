@@ -70,10 +70,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=6fc96835">
+<link rel="stylesheet" href="css/style.css?v=16fc70a5">
 <script>
   (function () {
     var root = document.documentElement;
+    // Every load starts at the top: a restored mid-page scroll position would not match the
+    // scroll animations, which are set up for the top of the page.
+    try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+    if (location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+    window.scrollTo(0, 0);
+    addEventListener('pagehide', function () { window.scrollTo(0, 0); });
     try { var t = localStorage.getItem('cv-theme'); if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t); } catch (e) {}
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) root.classList.add('anim');
 
@@ -404,11 +410,14 @@
     </ul>
     <div class="roles">
       <div class="role" data-reveal><p class="mono role__when">Jul 2026 – now</p><h3>UG Academic Affairs Secretary</h3><p>Student Gymkhana. Leads the UG Academic Council: picked 12 branch councillors and ran Batch 2026's orientation across 15 branch sessions.</p></div>
-      <div class="role" data-reveal><p class="mono role__when">Feb 2024 – Jul 2026</p><h3>Academic Councillor, Batch 2023</h3><p>UG Academic Council. Sub-Councillor, then Councillor: the bridge between 500+ students and faculty. Co-ran the first post-COVID offline curriculum session.</p></div>
-      <div class="role" data-reveal><p class="mono role__when">Apr 2026</p><h3>Head of Technical Team, Exodia</h3><p>IIT Mandi's annual cultural fest. Fest tech, ticketing and the gate.</p></div>
-      <div class="role" data-reveal><p class="mono role__when">Jun – Jul 2026</p><h3>Lab Lead, PRAYAS 4.0 &amp; HIMSHIKHAR</h3><p>CCE IIT Mandi. Lab lead for AI/ML/DL and for Software Development &amp; AI: 22 classes, 40+ hours, learners from Class 9 to over 80, 8 TAs.</p></div>
-      <div class="role" data-reveal><p class="mono role__when">Aug 2025 – May 2026</p><h3>Head Teaching Assistant</h3><p>Machine Learning, then Data Structures &amp; Algorithms; TA for Python &amp; Data Science and Probability &amp; Statistics. 600+ students. Also a TA at Masai since 2025.</p></div>
-      <div class="role" data-reveal><p class="mono role__when">2023 – now</p><h3>Mentor &amp; organiser</h3><p>GCS: Head Volunteer, Coordinator, now Mentor (Emerald of Gymkhana, 2025). SAE Co-Coordinator, now Mentor. STAC core team. Xpecto Hospitality Head. Physics Wallah JEE mentor.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Feb 2024 – Jul 2026</p><h3>Academic Councillor, Batch 2023</h3><p>UG Academic Council. Sub-Councillor, then Councillor and batch representative: the bridge between 500+ students and faculty.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Aug 2025 – May 2026</p><h3>Head Teaching Assistant</h3><p>Machine Learning, then Data Structures &amp; Algorithms. TA for Python &amp; Data Science and for Probability &amp; Statistics. 600+ students.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Jun – Jul 2026</p><h3>Lab Lead, PRAYAS 4.0 &amp; HIMSHIKHAR</h3><p>CCE IIT Mandi. AI/ML/DL and Software Development &amp; AI labs: 22 classes, 40+ hours, learners from Class 9 to over 80, 8 TAs.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Jun 2024 – now</p><h3>Guidance &amp; Counselling Services</h3><p>Head Volunteer for the 2024 induction, Coordinator for 2025–26, now a Mentor. Emerald of Gymkhana for best volunteer, 2025.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Aug 2024 – now</p><h3>SAE Club &amp; STAC</h3><p>SAE Co-Coordinator (2024–25), now its Mentor. STAC core team (2024–25), running hackathons for 100+ teams.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Apr 2026</p><h3>Head of Technical Team, Exodia</h3><p>IIT Mandi's annual cultural fest. Ran its tech: ticketing, the gate system and the website's performance.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Nov 2024 – Apr 2025</p><h3>Xpecto 2025</h3><p>IIT Mandi's tech fest. Hospitality Head, and organiser of the Orion astronomy hackathon under AstraX'25.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">2023 – now</p><h3>Mentoring &amp; service</h3><p>JEE mentor at Physics Wallah since 2024; TA at Masai since 2025. NSS member; volunteer at Convocation 2024, Diwali and Janmashtami.</p></div>
     </div>
   </section>
 
@@ -484,6 +493,15 @@
       <li class="aw__row" data-reveal><span class="aw__rank">Semis</span><span class="aw__what"><b>Tata Imagination Challenge 2024</b><span>National semi-finalist through 2 rounds.</span></span><span class="aw__yr mono">2025</span></li>
       <li class="aw__row" data-reveal><span class="aw__rank">1st</span><span class="aw__what"><b>Space Code Challenge 2023</b><span>Space Technology &amp; Astronomy Cell, IIT Mandi.</span></span><span class="aw__yr mono">2024</span></li>
     </ol>
+    <h3 class="certs__title mono">Certifications</h3>
+    <ul class="certs">
+      <li data-reveal><span class="mono">ISRO · IIRS</span><b>AI/ML for Geodata Analysis</b><span class="mono">2024</span></li>
+      <li data-reveal><span class="mono">Goldman Sachs · Forage</span><b>Software Engineering Job Simulation</b><span class="mono">2024</span></li>
+      <li data-reveal><span class="mono">Cisco</span><b>Data Analytics Essentials</b><span class="mono">2024</span></li>
+      <li data-reveal><span class="mono">Flipkart GRiD 6.0</span><b>Level 1, E-commerce</b><span class="mono">2024</span></li>
+      <li data-reveal><span class="mono">IBM</span><b>Data Fundamentals · Getting Started with Data · Getting Started with AI</b><span class="mono">2024</span></li>
+      <li data-reveal><span class="mono">Physics Wallah</span><b>Git and GitHub</b><span class="mono">2025</span></li>
+    </ul>
   </section>
 
   <!-- TOOLBOX -->
@@ -531,6 +549,6 @@
 <script src="js/projects.js?v=0c7b5b01" defer></script>
 <script src="js/covers.js?v=1eed8caa" defer></script>
 <script src="js/motifs.js?v=28d374fc" defer></script>
-<script src="js/main.js?v=9d6673dd" defer></script>
+<script src="js/main.js?v=c8a99ff8" defer></script>
 </body>
 </html>
