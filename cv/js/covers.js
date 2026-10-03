@@ -36,9 +36,9 @@
   // ---------- covers ----------
   var Covers = {};
 
-  // 01 PlanMyDegree: one dot per eligible student, lit when they signed in.
+  // 01 PlanMyDegree: one dot per student who signed in.
   Covers.pmd = function () {
-    var TOTAL = 1525, LIT = 1021, r = rng(11), rank = new Array(TOTAL), order = [], i;
+    var TOTAL = 1741, LIT = 1741, r = rng(11), rank = new Array(TOTAL), order = [], i;
     for (i = 0; i < TOTAL; i++) order.push(i);
     for (i = TOTAL - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t; }
     for (i = 0; i < TOTAL; i++) rank[order[i]] = i;
@@ -62,9 +62,9 @@
           ctx.beginPath(); ctx.arc(x, y, fresh ? L.r * 1.7 : L.r, 0, 6.2832); ctx.fill();
         }
         font(ctx, 11); ctx.fillStyle = C.fg; ctx.textBaseline = 'top';
-        ctx.fillText('SIGNED IN  ' + pad(lit, 4) + ' / 1525', 22, 18);
+        ctx.fillText('SIGNED IN  ' + pad(lit, 4), 22, 18);
         ctx.textAlign = 'right'; ctx.fillStyle = C.accent;
-        ctx.fillText(Math.round(lit / TOTAL * 100) + '%', w - 22, 18);
+        ctx.fillText('IIT MANDI', w - 22, 18);
         ctx.textAlign = 'left';
       }
     };
@@ -381,66 +381,93 @@
   }
 
   // Hero: Himalayan ridgelines, drawn back to front so nearer ridges hide farther ones.
+  // Everything that does not move is precomputed on resize; a frame is only multiply-adds.
   function ridges(canvas) {
     var ctx = canvas.getContext('2d'), w = 0, h = 0, dpr = 1, rows = [], visible = true, t = 0, last = performance.now();
-    var mouse = { x: -9999, y: -9999, k: 0 };
+    var mouse = { x: -9999, y: -9999, k: 0 }, docLeft = 0, docTop = 0;
+    var N = 0, P = 0, step = 6, top = 0, gap = 0, xs = null;
     function build() {
-      var r = rng(23), small = w < 700, n = small ? 30 : 52;
+      var r = rng(23), small = w < 700;
+      N = small ? 28 : 44; step = small ? 8 : 6;
+      top = h * .2; gap = (h * .98 - top) / N;
+      P = Math.ceil((w + 4) / step) + 1;
+      xs = new Float32Array(P);
+      for (var k = 0; k < P; k++) xs[k] = k * step - 2;
       rows = [];
-      for (var i = 0; i < n; i++) {
+      for (var i = 0; i < N; i++) {
         var peaks = [];
         for (var p = 0; p < 4; p++) peaks.push({ c: .1 + r() * .8, s: .05 + r() * .12, a: .35 + r() * .8 });
-        rows.push({ peaks: peaks, f1: 6 + r() * 6, f2: 15 + r() * 14, p1: r() * 6.28, p2: r() * 6.28, sp: .15 + r() * .25 });
+        var f1 = 6 + r() * 6, f2 = 15 + r() * 14, p1 = r() * 6.28, p2 = r() * 6.28, sp = .15 + r() * .25;
+        var env = new Float32Array(P), s1 = new Float32Array(P), c1 = new Float32Array(P), s2 = new Float32Array(P), c2 = new Float32Array(P);
+        for (k = 0; k < P; k++) {
+          var nx = xs[k] / w, e = 0;
+          for (p = 0; p < 4; p++) { var d = (nx - peaks[p].c) / peaks[p].s; e += peaks[p].a * Math.exp(-d * d); }
+          env[k] = e;
+          s1[k] = Math.sin(nx * f1 + p1); c1[k] = Math.cos(nx * f1 + p1);
+          s2[k] = Math.sin(nx * f2 + p2); c2[k] = Math.cos(nx * f2 + p2);
+        }
+        rows.push({ env: env, s1: s1, c1: c1, s2: s2, c2: c2, sp: sp, y: new Float32Array(P) });
       }
     }
     function size() {
       var b = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       w = b.width; h = b.height;
+      docLeft = b.left + window.scrollX; docTop = b.top + window.scrollY;
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       build(); draw();
     }
     function draw() {
       ctx.clearRect(0, 0, w, h);
-      var n = rows.length, top = h * .2, bottom = h * .98, gap = (bottom - top) / n, step = w < 700 ? 7 : 5;
-      var near = Math.round((mouse.y - top) / gap);
-      for (var i = 0; i < n; i++) {
-        var row = rows[i], y0 = top + i * gap, depth = i / (n - 1);
-        ctx.beginPath(); ctx.moveTo(-2, y0);
-        for (var x = 0; x <= w + step; x += step) {
-          var nx = x / w, env = 0;
-          for (var p = 0; p < row.peaks.length; p++) {
-            var pk = row.peaks[p], d = (nx - pk.c) / pk.s; env += pk.a * Math.exp(-d * d);
-          }
-          var wave = .55 + .3 * Math.sin(nx * row.f1 + row.p1 + t * row.sp) + .15 * Math.sin(nx * row.f2 + row.p2 - t * row.sp * 1.7);
-          var amp = gap * (2 + 9 * env * wave) * (.55 + .45 * (1 - depth));
-          var mx = (x - mouse.x) / (w * .07), my = (y0 - mouse.y) / (gap * 5);
-          var bump = mouse.k * gap * 7 * Math.exp(-mx * mx - my * my);
-          ctx.lineTo(x, y0 - amp * .5 - bump);
+      ctx.lineJoin = 'round';
+      var near = Math.round((mouse.y - top) / gap), mk = mouse.k, bx = w * .07, by = gap * 5;
+      var fg = C.fg, bg = C.bg, accent = C.accent;
+      for (var i = 0; i < N; i++) {
+        var row = rows[i], y0 = top + i * gap, depth = i / (N - 1);
+        var a1 = t * row.sp, a2 = t * row.sp * 1.7;
+        var sa1 = Math.sin(a1), ca1 = Math.cos(a1), sa2 = Math.sin(a2), ca2 = Math.cos(a2);
+        var scale = gap * (.55 + .45 * (1 - depth)) * .5;
+        var my = (y0 - mouse.y) / by, rowBump = mk > .01 && my * my < 9 ? mk * gap * 7 * Math.exp(-my * my) : 0;
+        var env = row.env, s1 = row.s1, c1 = row.c1, s2 = row.s2, c2 = row.c2, ys = row.y;
+        for (var k = 0; k < P; k++) {
+          // sin(x + a) and sin(x - b) expanded, so no trig runs per point
+          var wave = .55 + .3 * (s1[k] * ca1 + c1[k] * sa1) + .15 * (s2[k] * ca2 - c2[k] * sa2);
+          var yy = y0 - scale * (2 + 9 * env[k] * wave);
+          if (rowBump) { var mx = (xs[k] - mouse.x) / bx; if (mx * mx < 9) yy -= rowBump * Math.exp(-mx * mx); }
+          ys[k] = yy;
         }
-        ctx.lineTo(w + 2, h + 2); ctx.lineTo(-2, h + 2); ctx.closePath();
-        ctx.fillStyle = C.bg; ctx.fill();
-        var glow = Math.max(0, 1 - Math.abs(i - near) / 3) * mouse.k;
-        ctx.strokeStyle = glow > .05 ? rgba(C.accent, .25 + .7 * glow) : rgba(C.fg, .1 + .32 * depth);
+        // Fill only the ridge itself (line down to its baseline): that is all a nearer ridge needs to hide.
+        ctx.beginPath(); ctx.moveTo(xs[0], ys[0]);
+        for (k = 1; k < P; k++) ctx.lineTo(xs[k], ys[k]);
+        ctx.lineTo(xs[P - 1], y0 + 1); ctx.lineTo(xs[0], y0 + 1); ctx.closePath();
+        ctx.fillStyle = bg; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(xs[0], ys[0]);
+        for (k = 1; k < P; k++) ctx.lineTo(xs[k], ys[k]);
+        var glow = Math.max(0, 1 - Math.abs(i - near) / 3) * mk;
+        ctx.strokeStyle = glow > .05 ? rgba(accent, .25 + .7 * glow) : rgba(fg, .1 + .32 * depth);
         ctx.lineWidth = 1 + .6 * glow;
         ctx.stroke();
       }
     }
     new ResizeObserver(size).observe(canvas);
     new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(canvas);
+    // Pointer position from cached page offsets: no layout reads while the page animates.
     window.addEventListener('pointermove', function (e) {
       if (e.pointerType !== 'mouse') return;
-      var b = canvas.getBoundingClientRect(); mouse.x = e.clientX - b.left; mouse.y = e.clientY - b.top;
-    });
+      mouse.x = e.clientX + window.scrollX - docLeft; mouse.y = e.clientY + window.scrollY - docTop;
+    }, { passive: true });
     document.addEventListener('cv:theme', draw);
+    var acc = 0;
     return {
       tick: function (now) {
         var dt = Math.min((now - last) / 1000, .05); last = now;
         if (!visible || reduce) return;
+        // On high-refresh screens, draw at most ~60 times a second.
+        acc += dt; if (acc < .0155) return;
         var inside = mouse.x > 0 && mouse.y > 0 && mouse.y < h;
-        mouse.k += ((inside ? 1 : 0) - mouse.k) * .06;
-        t += dt; draw();
+        mouse.k += ((inside ? 1 : 0) - mouse.k) * Math.min(1, acc * 3.6);
+        t += acc; acc = 0; draw();
       }
     };
   }

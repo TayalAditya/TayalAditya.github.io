@@ -11,21 +11,30 @@
   window.__cvReady = true;
   if (!anim) root.classList.remove('anim');
 
-  // ---------- theme ----------
-  var themeBtn = $('.theme-toggle'), themeMeta = $('meta[name="theme-color"]');
+  // ---------- theme + palette ----------
+  // The palette is picked at random in <head> (window.__palettes); light/dark re-applies it.
+  var themeBtn = $('.theme-toggle'), pal = window.__palettes;
   function syncTheme() {
-    var light = root.getAttribute('data-theme') === 'light';
-    themeBtn.textContent = light ? 'Dark' : 'Light';
-    themeMeta.setAttribute('content', light ? '#ece7dc' : '#0d0d0b');
+    themeBtn.textContent = root.getAttribute('data-theme') === 'light' ? 'Dark' : 'Light';
   }
   themeBtn.addEventListener('click', function () {
     var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     root.setAttribute('data-theme', next);
     try { localStorage.setItem('cv-theme', next); } catch (e) {}
+    if (pal) pal.apply(pal.index());
     syncTheme();
     document.dispatchEvent(new Event('cv:theme'));
   });
   syncTheme();
+  var shuffleBtn = $('.shuffle-btn');
+  if (pal && shuffleBtn) {
+    shuffleBtn.addEventListener('click', function () {
+      var name = pal.next();
+      document.dispatchEvent(new Event('cv:theme'));
+      say('Colours — ' + name);
+      if (window.gsap && !reduce) gsap.fromTo(shuffleBtn.querySelector('i'), { rotate: 0 }, { rotate: 360, duration: .7, ease: 'expo.out' });
+    });
+  } else if (shuffleBtn) shuffleBtn.hidden = true;
 
   // ---------- clock (IST) ----------
   var clock = $('#clock');
@@ -265,25 +274,39 @@
   gsap.to('.progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: .3 } });
 
   // ---------- hero lens on the name ----------
-  var hero = $('.hero'), heroOn = true, px = -9999, py = -9999, lens = chars.map(function () { return { w: 800, d: 92 }; });
+  // Letter centres are measured once in page coordinates (again on resize), so a frame never
+  // reads layout; styles are written only when the rounded value changes, so a still lens costs nothing.
+  var hero = $('.hero'), nameEl = $('.hero__name'), heroOn = true, px = -9999, py = -9999, ready = false;
+  var lens = chars.map(function () { return { w: 800, d: 92, cx: 0, cy: 0, out: '' }; }), nameBox = { l: 0, t: 0, w: 1, h: 1 };
+  function measureLens() {
+    var sx = scrollX, sy = scrollY;
+    chars.forEach(function (c, i) {
+      var b = c.getBoundingClientRect();
+      lens[i].cx = b.left + sx + b.width / 2; lens[i].cy = b.top + sy + b.height / 2;
+    });
+    var nb = nameEl.getBoundingClientRect();
+    nameBox = { l: nb.left + sx, t: nb.top + sy, w: nb.width, h: nb.height };
+    ready = true;
+  }
+  intro.add(measureLens, 3.6);
+  var lensT; addEventListener('resize', function () { clearTimeout(lensT); lensT = setTimeout(measureLens, 200); });
   new IntersectionObserver(function (e) { heroOn = e[0].isIntersecting; }).observe(hero);
-  addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse') { px = e.clientX; py = e.clientY; } });
+  addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse') { px = e.clientX + scrollX; py = e.clientY + scrollY; } }, { passive: true });
   gsap.ticker.add(function (time) {
-    if (!heroOn || !chars.length) return;
+    if (!heroOn || !ready) return;
     var x = px, y = py;
     if (!finePointer) {
-      var nb = $('.hero__name').getBoundingClientRect();
-      x = nb.left + (.5 + .55 * Math.sin(time * .8)) * nb.width;
-      y = nb.top + (.5 + .5 * Math.sin(time * .5)) * nb.height;
+      x = nameBox.l + (.5 + .55 * Math.sin(time * .8)) * nameBox.w;
+      y = nameBox.t + (.5 + .5 * Math.sin(time * .5)) * nameBox.h;
     }
     var R = Math.max(200, innerWidth * .26);
-    chars.forEach(function (c, i) {
-      var b = c.getBoundingClientRect(), d = Math.hypot(x - (b.left + b.width / 2), y - (b.top + b.height / 2));
+    for (var i = 0; i < chars.length; i++) {
+      var s = lens[i], d = Math.hypot(x - s.cx, y - s.cy);
       var k = Math.max(0, 1 - d / R); k = k * k * (3 - 2 * k);
-      var s = lens[i], tw = 800 - 560 * k, td = 92 + 33 * k;
-      s.w += (tw - s.w) * .14; s.d += (td - s.d) * .14;
-      c.style.fontVariationSettings = '"wght" ' + s.w.toFixed(0) + ', "wdth" ' + s.d.toFixed(1);
-    });
+      s.w += (800 - 560 * k - s.w) * .14; s.d += (92 + 33 * k - s.d) * .14;
+      var out = '"wght" ' + Math.round(s.w / 4) * 4 + ', "wdth" ' + Math.round(s.d * 2) / 2;
+      if (out !== s.out) { chars[i].style.fontVariationSettings = out; s.out = out; }
+    }
   });
 
   // ---------- custom cursor ----------
@@ -336,6 +359,6 @@
     });
   }
 
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measureBands(); ScrollTrigger.refresh(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measureBands(); if (ready) measureLens(); ScrollTrigger.refresh(); });
   addEventListener('load', function () { ScrollTrigger.refresh(); });
 })();
