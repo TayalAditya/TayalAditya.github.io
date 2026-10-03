@@ -1,6 +1,6 @@
 // Writes the project index into index.html as plain HTML, so search engines and link
 // previews see every project without running JavaScript. main.js renders the same markup.
-// Run after editing js/projects.js:  node cv/tools/prerender.js
+// Run after editing anything in cv/ (it also versions CSS/JS URLs):  node cv/tools/prerender.js
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -30,5 +30,16 @@ const html = fs.readFileSync(file, 'utf8');
 const start = '<!-- prerender:projects -->', end = '<!-- /prerender:projects -->';
 const a = html.indexOf(start), b = html.indexOf(end);
 if (a === -1 || b === -1) throw new Error('prerender markers not found in index.html');
-fs.writeFileSync(file, html.slice(0, a + start.length) + '\n' + rows + '\n' + html.slice(b));
+let out = html.slice(0, a + start.length) + '\n' + rows + '\n' + html.slice(b);
+
+// Cache-busting: each local CSS/JS/photo URL gets ?v=<content hash>, so a new deploy never
+// pairs fresh HTML with a stylesheet the browser cached from the previous one.
+const crypto = require('crypto');
+out = out.replace(/(href|src)="((?:css|js|assets)\/[^"?]+\.(?:css|js|jpg|png))(?:\?v=[0-9a-f]+)?"/g, (m, attr, rel) => {
+  const f = path.join(root, rel);
+  if (!fs.existsSync(f)) return m;
+  const v = crypto.createHash('sha1').update(fs.readFileSync(f)).digest('hex').slice(0, 8);
+  return attr + '="' + rel + '?v=' + v + '"';
+});
+fs.writeFileSync(file, out);
 console.log('prerendered ' + projects.length + ' projects');

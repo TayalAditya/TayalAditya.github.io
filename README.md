@@ -1,6 +1,6 @@
 # tayaladitya.github.io
 
-- [`/cv/`](https://tayaladitya.github.io/cv/) is my CV as a website. It is plain HTML, CSS and JavaScript, with no build step. After editing `cv/js/projects.js`, run `node cv/tools/prerender.js` so the project list is also written into the HTML for search engines.
+- [`/cv/`](https://tayaladitya.github.io/cv/) is my CV as a website. It is plain HTML, CSS and JavaScript, with no build step. After editing anything in `cv/`, run `node cv/tools/prerender.js`: it writes the project list into the HTML for search engines and versions the CSS/JS links so browsers never mix old and new files.
 - Every other path is handled by the Pi redirect described below.
 
 ## Pi redirect
