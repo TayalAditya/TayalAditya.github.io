@@ -34,7 +34,8 @@
 
   // ---------- project index ----------
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-  var projects = (window.CV_PROJECTS || []).slice().sort(function (a, b) { return b.y - a.y; });
+  var ORDER = window.CV_ORDER || [], rankOf = function (p) { var i = ORDER.indexOf(p.name); return i === -1 ? ORDER.length : i; };
+  var projects = (window.CV_PROJECTS || []).slice().sort(function (a, b) { return rankOf(a) - rankOf(b); });
   var plist = $('#plist');
   plist.innerHTML = projects.map(function (p) {
     return '<li class="prow acc" data-cats="' + p.cats + '">' +
