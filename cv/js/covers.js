@@ -102,7 +102,7 @@
     return {
       draw: function (ctx, w, h, t) {
         ctx.fillStyle = C.bg; ctx.fillRect(0, 0, w, h);
-        var lh = 22, top = 70, bottom = h - 70, speed = 16;
+        var small = h < 320, lh = small ? 17 : 22, top = small ? 58 : 70, bottom = h - (small ? 10 : 70), speed = 16;
         var off = t * speed, first = Math.floor(off / lh), frac = off % lh;
         font(ctx, 11); ctx.textBaseline = 'middle';
         ctx.save(); ctx.beginPath(); ctx.rect(0, top, w, bottom - top); ctx.clip();
@@ -274,7 +274,7 @@
         ctx.fillStyle = C.bg; ctx.fillRect(0, 0, w, h);
         var period = 4.6, k = Math.floor(t / period) % 4, ph = (t % period) / period;
         var drop = ph < .15 ? 0 : ph < .55 ? ease((ph - .15) / .4) : ph < .82 ? 1 : 1 - ease((ph - .82) / .18);
-        var x0 = 22, x1 = w - 22, top = 70, rowH = (h - top - 70) / 4, bh = Math.min(30, rowH * .38);
+        var small = h < 320, x0 = 22, x1 = w - 22, top = small ? 42 : 70, rowH = (h - top - (small ? 12 : 70)) / 4, bh = Math.min(30, rowH * .38), ly = small ? 10 : 14, by = small ? 15 : 24;
         font(ctx, 11); ctx.textBaseline = 'top'; ctx.fillStyle = C.fg;
         ctx.fillText('CLIP ViT-B/16 — OFFICE-HOME', 22, 18);
         ctx.textAlign = 'right'; ctx.fillStyle = C.accent; ctx.fillText('H-SCORE 83.6', w - 22, 18); ctx.textAlign = 'left';
@@ -282,13 +282,13 @@
           var y = top + i * rowH, forget = i === k;
           var v = forget ? base[i] * (1 - .93 * drop) : base[i] + .012 * Math.sin(t * 2.1 + i * 1.7);
           font(ctx, 11); ctx.textBaseline = 'alphabetic';
-          ctx.fillStyle = forget ? C.accent : C.mute; ctx.fillText(names[i], x0, y + 14);
-          ctx.textAlign = 'right'; ctx.fillText(forget && drop > .5 ? 'FORGET' : 'KEEP', x1, y + 14); ctx.textAlign = 'left';
-          ctx.fillStyle = rgba(C.fg, .08); ctx.fillRect(x0, y + 24, x1 - x0, bh);
-          ctx.fillStyle = forget ? C.accent : C.fg; ctx.fillRect(x0, y + 24, (x1 - x0) * v, bh);
+          ctx.fillStyle = forget ? C.accent : C.mute; ctx.fillText(names[i], x0, y + ly);
+          ctx.textAlign = 'right'; ctx.fillText(forget && drop > .5 ? 'FORGET' : 'KEEP', x1, y + ly); ctx.textAlign = 'left';
+          ctx.fillStyle = rgba(C.fg, .08); ctx.fillRect(x0, y + by, x1 - x0, bh);
+          ctx.fillStyle = forget ? C.accent : C.fg; ctx.fillRect(x0, y + by, (x1 - x0) * v, bh);
           if (forget) {
             ctx.strokeStyle = rgba(C.accent, .6); ctx.setLineDash([3, 4]);
-            ctx.strokeRect(x0 + .5, y + 24.5, (x1 - x0) * base[i] - 1, bh - 1); ctx.setLineDash([]);
+            ctx.strokeRect(x0 + .5, y + by + .5, (x1 - x0) * base[i] - 1, bh - 1); ctx.setLineDash([]);
           }
         }
       }
@@ -349,12 +349,12 @@
   };
 
   // ---------- runner ----------
+  // Sizes from layout (clientWidth), not transforms, so canvases inside scaled or hidden parents still fit.
   function mount(canvas, inst, opts) {
-    var ctx = canvas.getContext('2d'), w = 0, h = 0, dpr = 1, visible = false, t0 = performance.now(), last = t0, t = opts.t || 0;
+    var ctx = canvas.getContext('2d'), w = 0, h = 0, dpr = 1, visible = false, last = performance.now(), t = opts.t || 0;
     function size() {
-      var b = canvas.getBoundingClientRect();
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = Math.max(1, b.width); h = Math.max(1, b.height);
+      w = Math.max(1, canvas.clientWidth); h = Math.max(1, canvas.clientHeight);
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (inst.resize) inst.resize(w, h, dpr);
@@ -363,21 +363,28 @@
     var ro = new ResizeObserver(size); ro.observe(canvas);
     var io = new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { rootMargin: '100px' });
     io.observe(canvas);
-    if (inst.pointer) {
-      canvas.addEventListener('pointermove', function (e) {
-        if (e.pointerType !== 'mouse') return;
-        var b = canvas.getBoundingClientRect(); inst.pointer({ x: e.clientX - b.left, y: e.clientY - b.top });
-      });
-      canvas.addEventListener('pointerleave', function () { inst.pointer(null); });
-    }
-    document.addEventListener('cv:theme', function () { if (inst.theme) inst.theme(); if (reduce) inst.draw(ctx, w, h, opts.still || 3.2, 0); });
-    return {
+    var onMove = function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var b = canvas.getBoundingClientRect(); inst.pointer({ x: e.clientX - b.left, y: e.clientY - b.top });
+    };
+    var onLeave = function () { inst.pointer(null); };
+    if (inst.pointer) { canvas.addEventListener('pointermove', onMove); canvas.addEventListener('pointerleave', onLeave); }
+    var onTheme = function () { if (inst.theme) inst.theme(); if (reduce || !visible) inst.draw(ctx, w, h, opts.still || 3.2, 0); };
+    document.addEventListener('cv:theme', onTheme);
+    var handle = {
       tick: function (now) {
         var dt = (now - last) / 1000; last = now;
         if (!visible || reduce) return;
-        t += dt; inst.draw(ctx, w, h, t, dt);
+        t += Math.min(dt, .1); inst.draw(ctx, w, h, t, Math.min(dt, .1));
+      },
+      detach: function () {
+        ro.disconnect(); io.disconnect();
+        canvas.removeEventListener('pointermove', onMove); canvas.removeEventListener('pointerleave', onLeave);
+        document.removeEventListener('cv:theme', onTheme);
+        var i = running.indexOf(handle); if (i > -1) running.splice(i, 1);
       }
     };
+    return handle;
   }
 
   // Hero: Himalayan ridgelines, drawn back to front so nearer ridges hide farther ones.
@@ -473,10 +480,27 @@
   }
 
   // ---------- boot ----------
-  var running = [];
+  var running = [], looping = false;
   document.addEventListener('cv:theme', function () { C = palette(); });
+  function loop(now) {
+    for (var i = 0; i < running.length; i++) running[i].tick(now);
+    requestAnimationFrame(loop);
+  }
+
+  // Shared drawing kit, used by motifs.js for the project index.
+  window.CVKit = {
+    rgba: rgba, rng: rng, ease: ease, clamp: clamp, pad: pad, font: font,
+    colors: function () { return C; }
+  };
 
   window.CVCovers = {
+    make: function (name) { return Covers[name] ? Covers[name]() : null; },
+    // Start animating a renderer on a canvas; returns a handle whose detach() stops it.
+    attach: function (canvas, inst, opts) {
+      var hnd = mount(canvas, inst, opts || {});
+      running.push(hnd);
+      return hnd;
+    },
     init: function () {
       var hero = document.querySelector('.hero__canvas');
       if (hero) running.push(ridges(hero));
@@ -484,11 +508,9 @@
         var make = Covers[cv.dataset.cover];
         if (make) running.push(mount(cv, make(), {}));
       });
-      if (reduce) return;
-      (function loop(now) {
-        for (var i = 0; i < running.length; i++) running[i].tick(now);
-        requestAnimationFrame(loop);
-      })(performance.now());
+      if (reduce || looping) return;
+      looping = true;
+      requestAnimationFrame(loop);
     }
   };
 })();

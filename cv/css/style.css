@@ -122,10 +122,7 @@ b, strong { font-weight: 700; }
 .nav__links a:hover::after { transform: scaleX(1); transform-origin: 0 50%; }
 .nav__right { display: flex; align-items: center; gap: 18px; }
 .nav__clock { display: none; opacity: .75; }
-.theme-toggle, .menu-btn, .shuffle-btn { padding: 6px 0; border-bottom: 1px solid currentColor; }
-.shuffle-btn { display: inline-flex; align-items: center; gap: 6px; }
-.shuffle-btn i { display: inline-block; font-style: normal; font-size: 14px; line-height: 1; }
-@media (max-width: 520px) { .shuffle-btn span { display: none; } }
+.theme-toggle, .menu-btn { padding: 6px 0; border-bottom: 1px solid currentColor; }
 @media (min-width: 900px) {
   .nav__links { display: flex; }
   .menu-btn { display: none; }
@@ -378,8 +375,22 @@ b, strong { font-weight: 700; }
 .prow__arrow { grid-column: 3; grid-row: 1; color: var(--accent); transition: transform .45s var(--ease); }
 .prow.is-open .prow__arrow { transform: rotate(90deg); }
 .prow .acc__inner { padding-left: 66px; }
+.prow__body { display: grid; gap: 14px; padding-bottom: 22px; }
 .prow__desc { padding: 2px 0 6px; max-width: 70ch; opacity: .85; }
-.prow__meta { display: flex; flex-wrap: wrap; gap: 6px 22px; padding-bottom: 20px; color: var(--mute); }
+.prow__fig { position: relative; height: 200px; margin: 0; border: 1px solid var(--line); background: var(--bg); overflow: hidden; }
+.prow__fig canvas, .pv canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+@media (min-width: 900px) {
+  .prow__body { grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 32px; align-items: start; }
+  .prow__fig { height: 220px; }
+}
+/* floating preview of a project's animation, desktop only */
+.pv {
+  position: fixed; left: 0; top: 0; z-index: 85; width: 340px; height: 212px; pointer-events: none;
+  border: 1px solid var(--line); background: var(--bg); visibility: hidden; opacity: 0;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .45);
+}
+.pv__label { position: absolute; left: 0; bottom: -26px; color: var(--accent); white-space: nowrap; }
+.prow__meta { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--mute); }
 .prow__meta a { color: var(--accent); border-bottom: 1px solid var(--accent); }
 @media (hover: hover) {
   .prow__head:hover { padding-left: 14px; color: var(--accent); }

@@ -139,3 +139,72 @@ window.CV_PROJECTS = [
     desc: 'ESP32 on a custom 2-layer PCB with a vector-based ROS motion planner.',
     stack: 'ESP32 · ROS · EasyEDA' }
 ];
+
+// One animation per project, keyed by name. m = motif (motifs.js, or a selected-work cover), p = its params.
+window.CV_ANIMS = {
+  'IIT Mandi LaTeX': { m: 'queue', p: { title: 'COMPILE QUEUE', right: 'CAP 50', cap: 50 } },
+  'Academic Section website update': { m: 'doc', p: { mode: 'diff', title: 'ACADEMICS SITE · 34 CHANGES', right: '+568 COURSES' } },
+  'TinkerBench': { m: 'circuit', p: { title: 'TINKERBENCH', right: 'NODAL SOLVE / FRAME' } },
+  'Simulation Lab & NCERT Sim': { m: 'pendulum', p: { title: 'SIMULATION LAB', right: '49 EXPERIMENTS' } },
+  'Faculty Leave Portal': { m: 'ledger' },
+  'TestPlatform': { m: 'timer', p: { title: 'TESTPLATFORM', right: 'SERVER-HELD CLOCK' } },
+  'Campus Pi hosting': { m: 'log', p: { title: 'RASPBERRY PI 5 · CAMPUS', right: '6 SERVICES', tagW: 84, lines: [
+    ['tp-live', 'status published · every 15 min', 'a'], ['leave', 'leave portal · up'], ['latex', 'compile queue · up'], ['dofa-sim', '23 experiments · up'],
+    ['ncert-sim', '26 modules · up'], ['bench', 'tinkerbench · up'], ['dhcp', 'address moved → redirect updated', 'a'], ['lab-site', 'rebuilt · committed'], ['vitals', 'cpu 56 °C · memory ok', 'm'] ] } },
+  'RASA Materials Lab website': { m: 'log', p: { title: 'LAB SITE · ADMIN PANEL', right: 'ASTRO', tagW: 70, lines: [
+    ['edit', 'publications.json'], ['build', 'astro build'], ['commit', 'auto-commit → main', 'a'], ['live', 'site served from the Pi'],
+    ['edit', 'people.json'], ['build', 'astro build'], ['commit', 'auto-commit → main', 'a'], ['undo', 'restore previous version', 'm'] ] } },
+  'FinFabric': { m: 'rank', p: { title: 'UDYAMSCORE · MSME HEALTH', right: '5 LIVE PRODUCTS', topk: 3, items: ['MSME A', 'MSME B', 'MSME C', 'MSME D', 'MSME E', 'MSME F', 'MSME G'] } },
+  'GBNet improvements': { m: 'bars', p: { title: 'GBNET · 6 DATASETS × 7 METRICS', right: '42 / 42', count: 42 } },
+  'PurrPedia': { m: 'cards', p: { title: 'PURRPEDIA', right: '247 BREEDS', cols: 4, labels: ['Bengal', 'Siamese', 'Maine Coon', 'Persian', 'Sphynx', 'Ragdoll', 'Abyssinian', 'Bombay'] } },
+  'FlowAI': { m: 'agents', p: { title: 'FLOWAI · GEMINI AGENTS', right: '5 AGENTS', nodes: ['DUMP', 'SPLIT', 'PLAN', 'WATCH', 'REMIND'],
+    steps: ['Brain dump captured', 'Goal split into 3–7 subtasks', 'Subtasks scheduled', 'Progress watched', 'Reminder sent'] } },
+  'SevaVoice': { m: 'wave', p: { title: 'SEVAVOICE', right: '14 LANGUAGES', labels: ['हिन्दी', 'ಕನ್ನಡ', 'தமிழ்', 'తెలుగు', 'বাংলা', 'मराठी', 'ગુજરાતી', 'English'] } },
+  'Vidyut AI': { m: 'chat', p: { title: 'VIDYUT AI', right: 'CITED ANSWERS', items: [
+    { q: 'Steps before servicing a conveyor?', a: ['ANSWER · CITED', 'Isolate energy, lock and tag out,', 'then verify zero energy.'], rows: ['SOURCE', 'OSHA 1910.147'] },
+    { q: 'Rules before hot work in a refinery?', a: ['ANSWER · CITED', 'Work permit, gas test and a', 'fire watch before work starts.'], rows: ['SOURCE', 'OISD standard'] } ] } },
+  'CyberShield': { m: 'scan', p: { title: 'MULE-ACCOUNT SCREEN', right: '0.89% BASE RATE', good: 'OK', bad: 'MULE?', flags: [2, 6],
+    rows: ['account 0412', 'account 0977', 'account 1203', 'account 1588', 'account 2041', 'account 2210', 'account 3307', 'account 4120'] } },
+  'Sahayak': { m: 'chat', p: { title: 'SAHAYAK · QUESTION → SQL', right: 'READ-ONLY', items: [
+    { q: 'Theft FIRs in March, by district?', a: ['SQL', 'SELECT district, COUNT(*) FROM firs', "WHERE crime = 'theft' AND month = 3", 'GROUP BY district;'], rows: ['DISTRICT     FIRS', 'district 1   14', 'district 2   9', 'district 3   6'] },
+    { q: 'ಮಾರ್ಚ್ ತಿಂಗಳ ಕಳ್ಳತನ ಪ್ರಕರಣಗಳು?', a: ['SQL', 'SELECT COUNT(*) FROM firs', "WHERE crime = 'theft' AND month = 3;"], rows: ['FIRS', '29'] } ] } },
+  'DeepMatch': { m: 'rank', p: { title: 'DEEPMATCH · 100K → 5K → TOP', right: 'MINILM', topk: 3, items: ['candidate 0412', 'candidate 1877', 'candidate 0093', 'candidate 5520', 'candidate 3141', 'candidate 2718', 'candidate 0007'] } },
+  'PSCDL 2026': { m: 'plots', p: { mode: 'change', title: 'PSCDL · SCENE CHANGE', right: 'CLASSICAL CV' } },
+  'HackerRank Orchestrate': { m: 'scan', p: { title: 'RULE ENGINE', right: '80.8% ON 20 SAMPLES', good: 'PASS', bad: 'FLAG', flags: [2, 4],
+    rows: ['sample 01', 'sample 02', 'sample 03', 'sample 04', 'sample 05', 'sample 06'] } },
+  'PodSense': { m: 'agents', p: { layout: 'hub', title: 'PODSENSE · DESIGN', right: '4 AGENTS', nodes: ['ORCH', 'LOGS', 'METRICS', 'EVENTS', 'FIX'],
+    steps: ['Ask the log agent', 'Ask the metrics agent', 'Ask the events agent', 'Ask the fix agent', 'Logs reply', 'Metrics reply', 'Events reply', 'Remedy proposed'] } },
+  'MahaDrishti AI': { m: 'plots', p: { mode: 'crops', title: 'MAHADRISHTI · SENTINEL-1/2', right: '194 PLOTS / VILLAGE', foot: '≠  DECLARED CROP DIFFERS FROM SATELLITE' } },
+  'UGAC website': { m: 'cards', p: { title: 'UGAC WEB TEAM · LIVE BUILD', right: '8 → 4', cols: 4, picked: [0, 2, 5, 7], labels: ['ugac1', 'ugac2', 'ugac3', 'ugac4', 'ugac5', 'ugac6', 'ugac7', 'ugac8'] } },
+  'PRAYAS ML labs': { m: 'tree', p: { title: 'PRAYAS · DECISION TREES', right: '4 LABS' } },
+  'Camouflaged object detection': { m: 'camo' },
+  'ISTP: solar panel waste': { m: 'doc', p: { mode: 'tex', title: 'ISTP · POLICY BRIEF', right: 'IC-301P', lines: [
+    '% can battery-recycling rules transfer to solar?', '\\section{Framework}', 'Dolowitz & Marsh policy transfer', '\\section{Recommendations}',
+    '30% viability gap funding', 'tradable recycling certificates', 'a 3-phase roadmap, 2026-35'] } },
+  'Unlearning CLIP': { m: 'forget' },
+  'Exodia Gate': { m: 'gate' },
+  'Face EngagementCV': { m: 'detect', p: { mode: 'faces', title: 'FACE ENGAGEMENTCV', right: 'CPU ONLY' } },
+  'PlanMyDegree': { m: 'pmd' },
+  'LaTeX lecture notes': { m: 'doc', p: { mode: 'tex', title: 'LECTURE NOTES', right: 'SLIDES → NOTES', lines: [
+    '\\begin{definition}[Heap]', 'A complete binary tree in which', 'every parent is at most its children.', '\\end{definition}',
+    '\\begin{theorem}', 'Build-heap runs in O(n) time.', '\\end{theorem}'] } },
+  'No-DL vehicle counter': { m: 'traffic' },
+  'SAND 2025': { m: 'wave', p: { title: 'SAND 2025 · ALS FROM VOICE', right: 'AIR 1 · GLOBAL 11', classes: 5, labels: ['CLASS 1', 'CLASS 2', 'CLASS 3', 'CLASS 4', 'CLASS 5'] } },
+  'Amazon ML Challenge': { m: 'series', p: { title: 'AMAZON ML · PRICE PREDICTION', right: '21 LIGHTGBM MODELS', from: 54.38, to: 32.33, label: 'SMAPE', unit: '%' } },
+  'Neufin': { m: 'cards', p: { title: 'PRODUCT CATALOGUE', right: 'NEXT.JS 14', cols: 4, labels: ['Product 01', 'Product 02', 'Product 03', 'Product 04', 'Product 05', 'Product 06', 'Product 07', 'Product 08'] } },
+  'CareerAutofill AI': { m: 'doc', p: { mode: 'form', title: 'CAREER AUTOFILL · CHROME', right: 'AGENTS + LORA', done: 'EVAL SCORE 81',
+    fields: [['NAME', 'Aditya Tayal'], ['UNIVERSITY', 'IIT Mandi'], ['ROLE', 'Software Engineer Intern'], ['WHY THIS ROLE', 'A tailored answer, drafted from the CV…']] } },
+  'SecureInvest-AI': { m: 'scan', p: { mode: 'gauge', title: 'SECUREINVEST · FRAUD RISK', right: '48 H · SOLO', score: 87, checks: ['Text NLP', 'Document OCR', 'Advisor registry', 'Live alerts'] } },
+  'Adobe India Hackathon': { m: 'doc', p: { mode: 'outline', title: 'PDF → OUTLINE JSON', right: 'OFFLINE · CPU', toc: ['1 Introduction', '1.1 Scope', '2 Method', '2.1 Parsing', '3 Results', '4 Conclusion'] } },
+  'DyslexoFly': { m: 'doc', p: { mode: 'reflow', title: 'DYSLEXOFLY', right: 'OPENDYSLEXIC + TTS' } },
+  'GCS website': { m: 'cards', p: { title: 'GUIDANCE & COUNSELLING', right: 'STATIC SITE', cols: 2, labels: ['Mission', 'Team', 'Self-help', 'Appointments'] } },
+  'Deepfake detection': { m: 'detect', p: { mode: 'fakes', title: 'DEEPFAKE · CLIP + SVM', right: '19 GENERATORS' } },
+  'CaptureSmart': { m: 'detect', p: { mode: 'blur', title: 'CAPTURESMART · BLUR MAP', right: 'MOBILENETV2' } },
+  'TheBudgetBuddy': { m: 'chat', p: { title: 'BUDGETBUDDY', right: 'RAG · LLAMA3-70B', items: [
+    { q: 'Where did my money go this month?', a: ['ANSWER', 'Food leads, mostly on weekends;', 'travel is second.'], rows: ['CATEGORY   SHARE', 'food       23%', 'travel     17%', 'books       9%'] } ] } },
+  'TheAttendioBot': { m: 'calendar', p: { title: 'ATTENDIOBOT · TELEGRAM', right: '80% FLOOR' } },
+  'Malware scanner': { m: 'scan', p: { title: 'STATIC SCAN · YARA', right: '.EXE .PDF .DOCX', good: 'CLEAN', bad: 'MALICIOUS', flags: [3, 5],
+    rows: ['setup.exe', 'invoice.pdf', 'notes.docx', 'tool.exe', 'report.pdf', 'macro.docx'] } },
+  'Faculty Application Portal': { m: 'rank', p: { title: 'FACULTY APPLICATIONS', right: 'SHORTLIST', topk: 2, items: ['Applicant 01', 'Applicant 02', 'Applicant 03', 'Applicant 04', 'Applicant 05', 'Applicant 06'] } },
+  'Autonomous ROS robot': { m: 'robot', p: { title: 'ESP32 · ROS', right: 'VECTOR PLANNER' } }
+};

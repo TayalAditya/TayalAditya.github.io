@@ -26,15 +26,6 @@
     document.dispatchEvent(new Event('cv:theme'));
   });
   syncTheme();
-  var shuffleBtn = $('.shuffle-btn');
-  if (pal && shuffleBtn) {
-    shuffleBtn.addEventListener('click', function () {
-      var name = pal.next();
-      document.dispatchEvent(new Event('cv:theme'));
-      say('Colours — ' + name);
-      if (window.gsap && !reduce) gsap.fromTo(shuffleBtn.querySelector('i'), { rotate: 0 }, { rotate: 360, duration: .7, ease: 'expo.out' });
-    });
-  } else if (shuffleBtn) shuffleBtn.hidden = true;
 
   // ---------- clock (IST) ----------
   var clock = $('#clock');
@@ -50,12 +41,27 @@
       '<button class="prow__head acc__trigger" type="button" aria-expanded="false">' +
       '<span class="prow__y mono">' + p.y + '</span><span class="prow__name">' + esc(p.name) + '</span>' +
       '<span class="prow__ctx mono">' + esc(p.ctx) + '</span><span class="prow__arrow" aria-hidden="true">→</span></button>' +
-      '<div class="acc__body"><div class="acc__inner"><p class="prow__desc">' + esc(p.desc) + '</p>' +
+      '<div class="acc__body"><div class="acc__inner"><div class="prow__body"><div class="prow__text"><p class="prow__desc">' + esc(p.desc) + '</p>' +
       '<p class="prow__meta mono"><span>' + esc(p.stack) + '</span>' +
       (p.link ? '<a href="' + esc(p.link) + '" target="_blank" rel="noopener" data-cursor="Open">Open ↗</a>' : '') +
-      '</p></div></div></li>';
+      '</p></div><figure class="prow__fig" aria-hidden="true"><canvas></canvas></figure></div></div></div></li>';
   }).join('');
   var rows = $$('.prow', plist), idxCount = $('#idxCount');
+  var ANIMS = window.CV_ANIMS || {};
+  rows.forEach(function (r, i) { r._spec = ANIMS[projects[i].name]; r._name = projects[i].name; });
+
+  // A row's animation runs only while the row is open.
+  function rowAnim(row, open) {
+    if (!window.CVMotifs || !window.CVCovers) return;
+    if (open && !row._anim) {
+      var inst = window.CVMotifs.make(row._spec);
+      if (inst) row._anim = window.CVCovers.attach(row.querySelector('.prow__fig canvas'), inst);
+    } else if (!open && row._anim) {
+      setTimeout(function () {
+        if (!row.classList.contains('is-open') && row._anim) { row._anim.detach(); row._anim = null; }
+      }, 650);
+    }
+  }
   idxCount.textContent = rows.length;
   $$('.filters button').forEach(function (b) {
     var f = b.dataset.filter;
@@ -85,6 +91,7 @@
     var item = trg.closest('.acc'), open = !item.classList.contains('is-open');
     item.classList.toggle('is-open', open);
     trg.setAttribute('aria-expanded', String(open));
+    if (item.classList.contains('prow')) { rowAnim(item, open); if (open && typeof hidePreview === 'function') hidePreview(); }
     if (anim) { clearTimeout(refreshT); refreshT = setTimeout(function () { ScrollTrigger.refresh(); }, 650); }
   });
 
@@ -308,6 +315,40 @@
       if (out !== s.out) { chars[i].style.fontVariationSettings = out; s.out = out; }
     }
   });
+
+  // ---------- index: floating preview on hover (desktop) ----------
+  var hidePreview = function () {};
+  if (finePointer && window.CVMotifs && window.CVCovers) {
+    var pv = document.createElement('div');
+    pv.className = 'pv'; pv.setAttribute('aria-hidden', 'true');
+    pv.innerHTML = '<canvas></canvas><span class="pv__label mono"></span>';
+    document.body.appendChild(pv);
+    var pvCanvas = pv.querySelector('canvas'), pvLabel = pv.querySelector('.pv__label'), pvAnim = null, pvRow = null, pvOn = false;
+    var pvX = gsap.quickTo(pv, 'x', { duration: .55, ease: 'power3' }), pvY = gsap.quickTo(pv, 'y', { duration: .55, ease: 'power3' });
+    hidePreview = function () {
+      if (!pvOn) return; pvOn = false; pvRow = null;
+      gsap.to(pv, { autoAlpha: 0, scale: .7, duration: .3, ease: 'power2.in', overwrite: 'auto' });
+    };
+    plist.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var row = e.target.closest('.prow'), head = e.target.closest('.prow__head');
+      if (!row || !head || row.classList.contains('is-open')) { hidePreview(); return; }
+      var w = pv.offsetWidth, h = pv.offsetHeight;
+      var x = e.clientX + 32 + w > innerWidth ? e.clientX - w - 32 : e.clientX + 32, y = Math.min(Math.max(e.clientY - h / 2, 70), innerHeight - h - 16);
+      if (!pvOn) { gsap.set(pv, { x: x, y: y }); }
+      pvX(x); pvY(y);
+      if (row !== pvRow) {
+        pvRow = row;
+        if (pvAnim) { pvAnim.detach(); pvAnim = null; }
+        var inst = window.CVMotifs.make(row._spec);
+        if (inst) pvAnim = window.CVCovers.attach(pvCanvas, inst);
+        pvLabel.textContent = row._name;
+      }
+      if (!pvOn) { pvOn = true; gsap.to(pv, { autoAlpha: 1, scale: 1, duration: .45, ease: 'expo.out', overwrite: 'auto' }); }
+    });
+    plist.addEventListener('pointerleave', hidePreview);
+    addEventListener('scroll', function () { if (pvOn) hidePreview(); }, { passive: true });
+  }
 
   // ---------- custom cursor ----------
   if (finePointer) {
