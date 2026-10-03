@@ -32,6 +32,16 @@
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function pad(n, l) { n = String(n); while (n.length < l) n = '0' + n; return n; }
   function font(ctx, size, weight) { ctx.font = (weight || 500) + ' ' + size + 'px ' + MONO; }
+  // Left and right header labels on one line; on narrow canvases the right one is dropped
+  // (or the left one shortened) so they never overlap.
+  function headLR(ctx, w, left, right, lc, rc) {
+    font(ctx, 11); ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+    var room = w - 44, lw = ctx.measureText(left).width, rw = right ? ctx.measureText(right).width : 0;
+    if (right && lw + rw + 16 > room) right = '';
+    if (lw > room) { while (left.length > 1 && ctx.measureText(left + '…').width > room) left = left.slice(0, -1); left += '…'; }
+    ctx.fillStyle = lc || C.fg; ctx.fillText(left, 22, 18);
+    if (right) { ctx.textAlign = 'right'; ctx.fillStyle = rc || C.accent; ctx.fillText(right, w - 22, 18); ctx.textAlign = 'left'; }
+  }
 
   // ---------- covers ----------
   var Covers = {};
@@ -61,11 +71,7 @@
           ctx.fillStyle = on ? C.accent : dim;
           ctx.beginPath(); ctx.arc(x, y, fresh ? L.r * 1.7 : L.r, 0, 6.2832); ctx.fill();
         }
-        font(ctx, 11); ctx.fillStyle = C.fg; ctx.textBaseline = 'top';
-        ctx.fillText('SIGNED IN  ' + pad(lit, 4), 22, 18);
-        ctx.textAlign = 'right'; ctx.fillStyle = C.accent;
-        ctx.fillText('IIT MANDI', w - 22, 18);
-        ctx.textAlign = 'left';
+        headLR(ctx, w, 'SIGNED IN  ' + pad(lit, 4), 'IIT MANDI');
       }
     };
   };
@@ -123,15 +129,10 @@
           if (y < bottom - 4) last = row;
         }
         ctx.restore(); ctx.globalAlpha = 1;
-        font(ctx, 11); ctx.textBaseline = 'top'; ctx.fillStyle = C.fg;
-        ctx.fillText('LEDGER — APPEND ONLY', 22, 18);
+        headLR(ctx, w, 'LEDGER — APPEND ONLY', last ? 'AVAILABLE ' + last.bal.toFixed(1) + 'd' : '');
         ctx.fillStyle = C.mute; ctx.fillText('available = entitled − availed − held', 22, 38);
         ctx.strokeStyle = rgba(C.fg, .18); ctx.beginPath(); ctx.moveTo(22, top - 8); ctx.lineTo(w - 22, top - 8); ctx.stroke();
-        if (last) {
-          ctx.textAlign = 'right'; ctx.fillStyle = C.accent;
-          ctx.fillText('AVAILABLE ' + last.bal.toFixed(1) + 'd', w - 22, 18);
-          ctx.textAlign = 'left';
-        }
+
       }
     };
   };
@@ -187,10 +188,7 @@
           ctx.beginPath(); ctx.moveTo(ox + s * .2, oy + s * .2); ctx.lineTo(ox + s * .8, oy + s * .8);
           ctx.moveTo(ox + s * .8, oy + s * .2); ctx.lineTo(ox + s * .2, oy + s * .8); ctx.stroke(); ctx.lineWidth = 1;
         }
-        font(ctx, 11); ctx.textBaseline = 'top'; ctx.fillStyle = C.fg;
-        ctx.fillText('GATE 1 — PRONITE', 22, 18);
-        ctx.textAlign = 'right'; ctx.fillStyle = C.mute;
-        ctx.fillText('ADMITTED ' + pad(admitted % 201, 3), w - 22, 18); ctx.textAlign = 'left';
+        headLR(ctx, w, 'GATE 1 — PRONITE', 'ADMITTED ' + pad(admitted % 201, 3), C.fg, C.mute);
         var msg = !showResult ? 'SCANNING…' : blocked ? 'ALREADY CLAIMED — BLOCKED ' + pad(bcount, 2) + '/26' : 'CLAIMED ONCE — ADMITTED';
         font(ctx, 12, 500); ctx.fillStyle = showResult && blocked ? C.accent : C.fg; ctx.textAlign = 'center';
         ctx.fillText(msg, w / 2, oy + s + 30); ctx.textAlign = 'left';
@@ -275,9 +273,7 @@
         var period = 4.6, k = Math.floor(t / period) % 4, ph = (t % period) / period;
         var drop = ph < .15 ? 0 : ph < .55 ? ease((ph - .15) / .4) : ph < .82 ? 1 : 1 - ease((ph - .82) / .18);
         var small = h < 320, x0 = 22, x1 = w - 22, top = small ? 42 : 70, rowH = (h - top - (small ? 12 : 70)) / 4, bh = Math.min(30, rowH * .38), ly = small ? 10 : 14, by = small ? 15 : 24;
-        font(ctx, 11); ctx.textBaseline = 'top'; ctx.fillStyle = C.fg;
-        ctx.fillText('CLIP ViT-B/16 — OFFICE-HOME', 22, 18);
-        ctx.textAlign = 'right'; ctx.fillStyle = C.accent; ctx.fillText('H-SCORE 83.6', w - 22, 18); ctx.textAlign = 'left';
+        headLR(ctx, w, w < 420 ? 'CLIP — OFFICE-HOME' : 'CLIP ViT-B/16 — OFFICE-HOME', 'H-SCORE 83.6');
         for (var i = 0; i < 4; i++) {
           var y = top + i * rowH, forget = i === k;
           var v = forget ? base[i] * (1 - .93 * drop) : base[i] + .012 * Math.sin(t * 2.1 + i * 1.7);
@@ -341,9 +337,7 @@
           ctx.setLineDash([2, 3]); ctx.strokeStyle = C.mute; ctx.strokeRect(p.x - 8, p.y - 10, 16, 20); ctx.setLineDash([]);
           ctx.textBaseline = 'middle'; ctx.fillText('ignored', p.x + 13, p.y);
         }
-        font(ctx, 11); ctx.textBaseline = 'top'; ctx.fillStyle = C.fg;
-        ctx.fillText('COUNT ' + pad(count % 10000, 4), 22, 18);
-        ctx.textAlign = 'right'; ctx.fillStyle = C.accent; ctx.fillText('MAE 16.4 · NO DEEP LEARNING', w - 22, 18); ctx.textAlign = 'left';
+        headLR(ctx, w, 'COUNT ' + pad(count % 10000, 4), w < 420 ? 'MAE 16.4' : 'MAE 16.4 · NO DEEP LEARNING');
       }
     };
   };

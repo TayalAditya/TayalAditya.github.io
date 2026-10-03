@@ -10,7 +10,9 @@
   function bg(ctx, w, h) { ctx.fillStyle = C().bg; ctx.fillRect(0, 0, w, h); }
   function head(ctx, w, left, right) {
     var c = C(); font(ctx, 10); ctx.textBaseline = 'top'; ctx.textAlign = 'left';
-    ctx.fillStyle = c.fg; ctx.fillText(left || '', 12, 10);
+    left = left || ''; var room = w - 24;
+    if (right && ctx.measureText(left).width + ctx.measureText(right).width + 14 > room) right = '';
+    ctx.fillStyle = c.fg; ctx.fillText(fit(ctx, left, room), 12, 10);
     if (right) { ctx.textAlign = 'right'; ctx.fillStyle = c.accent; ctx.fillText(right, w - 12, 10); ctx.textAlign = 'left'; }
   }
   function box(ctx, x, y, w, h, r) {

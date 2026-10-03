@@ -27,6 +27,11 @@
   });
   syncTheme();
 
+  // ---------- nav turns solid once the hero has scrolled away ----------
+  var navEl = $('.nav'), heroEl = $('.hero');
+  function syncNav() { navEl.classList.toggle('is-solid', scrollY > heroEl.offsetHeight * .7); }
+  addEventListener('scroll', syncNav, { passive: true }); syncNav();
+
   // ---------- clock (IST) ----------
   var clock = $('#clock');
   var fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
