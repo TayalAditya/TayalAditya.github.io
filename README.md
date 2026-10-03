@@ -1,5 +1,10 @@
 # tayaladitya.github.io
 
+- [`/cv/`](https://tayaladitya.github.io/cv/) is my CV as a website. It is plain HTML, CSS and JavaScript, with no build step.
+- Every other path is handled by the Pi redirect described below.
+
+## Pi redirect
+
 Forwards `tayaladitya.github.io/ip:PORT` to the Raspberry Pi on that port,
 wherever DHCP has put it today.
 
