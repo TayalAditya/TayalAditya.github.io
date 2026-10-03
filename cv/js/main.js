@@ -43,7 +43,8 @@
       '<span class="prow__ctx mono">' + esc(p.ctx) + '</span><span class="prow__arrow" aria-hidden="true">→</span></button>' +
       '<div class="acc__body"><div class="acc__inner"><div class="prow__body"><div class="prow__text"><p class="prow__desc">' + esc(p.desc) + '</p>' +
       '<p class="prow__meta mono"><span>' + esc(p.stack) + '</span>' +
-      (p.link ? '<a href="' + esc(p.link) + '" target="_blank" rel="noopener" data-cursor="Open">Open ↗</a>' : '') +
+      (p.link ? '<a href="' + esc(p.link) + '" target="_blank" rel="noopener" data-cursor="Open">' + (/github\.com/.test(p.link) ? 'Code' : 'Open') + ' ↗</a>' : '') +
+      (p.live ? '<a href="' + esc(p.live) + '" target="_blank" rel="noopener" data-cursor="Open">Live ↗</a>' : '') +
       '</p></div><figure class="prow__fig" aria-hidden="true"><canvas></canvas></figure></div></div></div></li>';
   }).join('');
   var rows = $$('.prow', plist), idxCount = $('#idxCount');

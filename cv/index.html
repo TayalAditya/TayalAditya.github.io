@@ -153,7 +153,7 @@
   <!-- SELECTED WORK -->
   <section class="work" id="work">
     <div class="sec work__head">
-      <div class="sec-head"><span class="mono">(01)</span><h2 class="sec-head__title" data-split>Selected work</h2><span class="mono sec-head__aside">Six of forty-six</span></div>
+      <div class="sec-head"><span class="mono">(01)</span><h2 class="sec-head__title" data-split>Selected work</h2><span class="mono sec-head__aside">Six of forty-four</span></div>
     </div>
     <div class="work__pin">
       <div class="work__hud mono" aria-hidden="true"><span>Selected work — <b id="workIdx">01</b> / 06</span><i><em></em></i><span>Keep scrolling →</span></div>
@@ -229,7 +229,7 @@
 
         <article class="panel">
           <div class="panel__text">
-            <p class="panel__idx mono">05 — Team of 4 · CS-683 · Jan – May 2026</p>
+            <p class="panel__idx mono">05 — Team of 4 · Jan – May 2026</p>
             <h3 class="panel__title">Unlearning CLIP</h3>
             <p class="panel__lede">Teaching a vision model to forget one domain and keep the rest.</p>
             <ul class="panel__stats">
@@ -272,10 +272,11 @@
 
       <div class="xp__item acc">
         <button class="xp__row acc__trigger" type="button" aria-expanded="false">
-          <span class="xp__date mono">2026 – 27</span><span class="xp__co">American Express</span><span class="xp__role">Major Technical Project (MTP)</span><span class="xp__plus" aria-hidden="true"></span>
+          <span class="xp__date mono">Aug 2026 – now</span><span class="xp__co">American Express</span><span class="xp__role">Major Technical Project — imbalanced fraud detection</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
-          <p>Final-year Major Technical Project with American Express. In progress.</p>
+          <p class="acc__lead">Stress-testing Self-Paced Ensemble learning on a multi-product fraud portfolio built from public data: four base learners, pooled against per-product, three seeds each, scored by a cost model that turns a fraud ranking into money saved. The best setup recovers <b>64%</b> of what is recoverable.</p>
+          <p class="mono acc__stack">Team project · Python · scikit-learn · XGBoost · LightGBM · CatBoost</p>
         </div></div>
       </div>
 
@@ -284,87 +285,38 @@
           <span class="xp__date mono">Apr 2026 – now</span><span class="xp__co">Koha Consultants</span><span class="xp__role">Software Developer Intern — InstaFarms &amp; MagoStays</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
-          <p class="acc__lead">Full-stack engineer on a two-brand villa and farmstay booking platform: a TypeScript backend, an admin panel, two customer sites and a host mobile app.</p>
-          <ul class="acc__nums mono"><li><b>490+</b>commits</li><li><b>~170</b>API endpoints</li><li><b>52</b>SQL migrations</li><li><b>~900</b>test cases</li></ul>
-          <h4 class="acc__group mono">Invoicing &amp; finance</h4>
-          <ul>
-            <li>Invoice engine with per-financial-year serial numbers from row-locked counters and exactly-once issuance through an append-only event trail.</li>
-            <li>Maker-checker corrections: an independent checker approves, then credit notes, debit notes or reissues run through the same serial pipeline in one transaction.</li>
-            <li>Finance Correction Mode: a no-write dry run classifies every booking, then each is reversed and replayed in its own sub-transaction; closed periods get append-only deltas.</li>
-            <li>GST, TCS and TDS across 4 owner agreement models, verified by a <b>128-case parameterised test</b>; a transactional outbox to the accounting system with hash-bound idempotency keys.</li>
-          </ul>
-          <h4 class="acc__group mono">Payments &amp; payouts</h4>
-          <ul>
-            <li>Owner payouts on Razorpay Route and RazorpayX: rows saved before the network call double as idempotency keys, webhooks are ordered by event time, a reconciliation sweep and guarded retries prevent double payment.</li>
-            <li>Host wallet with a lock that serialises payouts and withdrawals; penny-drop bank verification with name matching, and owner KYC.</li>
-          </ul>
-          <h4 class="acc__group mono">Bookings &amp; inventory</h4>
-          <ul>
-            <li>OTA booking and cancellation: a no-write preview, an atomic cancel and audited admin overrides.</li>
-            <li>A per-room Resort property type across all 5 apps; unified three availability implementations into one rule and closed <b>24 catalogued edge cases</b>.</li>
-            <li>A channel partner's inventory: hourly sync, pay-then-book with HMAC checks, a retry state machine with refund fallback, and <b>60 → 2</b> API calls per calendar.</li>
-          </ul>
-          <h4 class="acc__group mono">Apps &amp; quality</h4>
-          <ul>
-            <li>React Native host app (wallet, payout onboarding, room picker); a plain-language invoice test lab for non-technical testers; admin TypeScript errors cut from <b>62 to 0</b>.</li>
-            <li>SQL validated inside rolled-back transactions on staging, real-database suites and Playwright end-to-end runs.</li>
-          </ul>
-          <p class="mono acc__stack">TypeScript · Hono · Drizzle · PostgreSQL · Next.js 15 · React Native · Razorpay · Vitest · Playwright</p>
+          <p class="acc__lead">Full-stack developer on a two-brand villa and farmstay booking platform. I own features across payments, invoicing and bookings, in the backend, admin panel, customer sites and host app, with a bias for correctness, audit trails and tests.</p>
+          <p class="mono acc__stack">TypeScript · Node.js · PostgreSQL · Next.js · React Native</p>
         </div></div>
       </div>
 
       <div class="xp__item acc">
         <button class="xp__row acc__trigger" type="button" aria-expanded="false">
-          <span class="xp__date mono">Dec 2025 – Jun 2026</span><span class="xp__co">WattCycle</span><span class="xp__role">AI/ML Engineer Intern — solar monitoring</span><span class="xp__plus" aria-hidden="true"></span>
+          <span class="xp__date mono">Dec 2025 – Jun 2026</span><span class="xp__co">WattCycle</span><span class="xp__role">AI/ML Engineer Intern — solar energy</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
-          <p class="acc__lead">ML and full stack on WattCycle Atlas, a solar-plant monitoring platform. I wrote its Python ML service.</p>
-          <ul class="acc__nums mono"><li><b>5,900</b>lines of ML service</li><li><b>17</b>pull requests</li><li><b>13</b>forecast horizons</li><li><b>87</b>tests</li></ul>
-          <h4 class="acc__group mono">Detection &amp; forecasting</h4>
-          <ul>
-            <li>5 rule-based plant-health checks with severity tiers plus an Isolation Forest detector over 12 features; open faults de-duplicated within 24 hours.</li>
-            <li>A 13-horizon forecaster that picks XGBoost, a Prophet + XGBoost ensemble or Prophet by horizon, on 34 engineered features; LSTM and MLflow tracking prepared for rollout.</li>
-          </ul>
-          <h4 class="acc__group mono">Backend &amp; platform</h4>
-          <ul>
-            <li>TimescaleDB aggregation tables, concurrently refreshed materialised views, 7 role-protected endpoints, 3 cron jobs and idempotent upserts.</li>
-            <li>Replaced random chart placeholders with sourced values and a 15-category metrics spec; moved the monorepo to pnpm workspaces with Dockerised services and CI caching.</li>
-          </ul>
-          <p class="mono acc__stack">Python · FastAPI · scikit-learn · XGBoost · Prophet · TimescaleDB · Node.js · Docker</p>
+          <p class="acc__lead">Worked across ML and full stack on WattCycle Atlas, a solar-plant monitoring platform: fault detection, energy forecasting and the analytics backend behind its dashboards.</p>
+          <p class="mono acc__stack">Python · FastAPI · scikit-learn · XGBoost · Prophet · PostgreSQL · React</p>
         </div></div>
       </div>
 
       <div class="xp__item acc">
         <button class="xp__row acc__trigger" type="button" aria-expanded="false">
-          <span class="xp__date mono">Oct 2025 – Apr 2026</span><span class="xp__co">Garudakshak</span><span class="xp__role">Full Stack Developer Intern — counter-UAV defence</span><span class="xp__plus" aria-hidden="true"></span>
+          <span class="xp__date mono">Oct 2025 – Apr 2026</span><span class="xp__co">Garudakshak</span><span class="xp__role">Full Stack Developer Intern — defence tech</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
-          <p class="acc__lead">Created and solely developed the operator console for a counter-drone sensing system, from an empty repository to production releases.</p>
-          <ul class="acc__nums mono"><li><b>91</b>API routes</li><li><b>68</b>releases</li><li><b>72</b>permission-gated routes</li><li><b>10</b>DB migrations</li></ul>
-          <ul>
-            <li>Tauri v2 desktop app: the Rust shell health-checks and launches a Go API and a Python ML service behind a React + TypeScript UI.</li>
-            <li>Go API gateway grown from 8 to 91 routes, with rate limiting, security headers, Prometheus metrics, Redis caching and graceful shutdown.</li>
-            <li>Keycloak SSO with a local-JWT fallback and capability-based permissions; a WebSocket hub streaming detection, incident and device events to live dashboards and maps.</li>
-            <li>A camera-capture watchdog with backoff, hot-swap without stopping detection, and systemd-supervised services on Raspberry Pi 5; CI-built Windows and ARM64 releases.</li>
-          </ul>
-          <p class="mono acc__stack">Tauri · Rust · Go · React · TypeScript · PostgreSQL · TimescaleDB · Redis · Keycloak · ONNX Runtime</p>
+          <p class="acc__lead">Built the operator desktop application for a counter-drone system, from an empty repository to MVP, shipped for Windows and Raspberry Pi.</p>
+          <p class="mono acc__stack">Tauri · Go · React · TypeScript · PostgreSQL</p>
         </div></div>
       </div>
 
       <div class="xp__item acc">
         <button class="xp__row acc__trigger" type="button" aria-expanded="false">
-          <span class="xp__date mono">Sep 2025 – Jun 2026</span><span class="xp__co">Strive Partners</span><span class="xp__role">Lead Developer Intern — Strive Hunt</span><span class="xp__plus" aria-hidden="true"></span>
+          <span class="xp__date mono">Sep 2025 – Jun 2026</span><span class="xp__co">Strive Partners</span><span class="xp__role">Lead Developer Intern — hiring tech</span><span class="xp__plus" aria-hidden="true"></span>
         </button>
         <div class="acc__body"><div class="acc__inner">
-          <p class="acc__lead">Lead developer of Strive Hunt, a hiring platform with a candidate portal, an employer portal and an internal applicant-tracking system.</p>
-          <ul class="acc__nums mono"><li><b>1,000+</b>commits</li><li><b>39</b>pages</li><li><b>3</b>product modules</li><li><b>16</b>search filters</li></ul>
-          <ul>
-            <li>ATS with role-based access, a spreadsheet-style candidate grid with autosave and a status pipeline, Excel bulk import with column mapping, soft delete and an audit log.</li>
-            <li>Real-time collaboration over WebSockets with backoff reconnects and heartbeats; boolean candidate search; an interview scheduler with a calendar view.</li>
-            <li>One API interceptor for JWT refresh, timeouts, retries and CSRF; XSS sanitising, inactivity timeouts, Google sign-in and email OTP.</li>
-            <li>Integrated the Django REST API on AWS; shipped on Vercel and as a hardened Docker image with container smoke tests and vulnerability scans in CI.</li>
-          </ul>
-          <p class="mono acc__stack">JavaScript · React · TypeScript · Vite · TanStack Query · WebSockets · Django REST · AWS · Docker</p>
+          <p class="acc__lead">Led development of Strive Hunt, a hiring platform with candidate and employer portals and an internal applicant-tracking system.</p>
+          <p class="mono acc__stack">React · TypeScript · JavaScript · Django REST · AWS</p>
         </div></div>
       </div>
 
@@ -374,16 +326,14 @@
   <!-- LEADERSHIP -->
   <section class="sec leadership" id="leadership">
     <div class="sec-head"><span class="mono">(03)</span><h2 class="sec-head__title" data-split>Leadership</h2><span class="mono sec-head__aside">Elected 3 Jul 2026</span></div>
-    <p class="lead__statement" data-words>Elected <em class="serif">UG Academic Affairs Secretary</em> — the student voice on academics for ~3,500 undergraduates at IIT Mandi. I run the UG Academic Council, sit with faculty on what the curriculum should be, and build the tools the council needs.</p>
+    <p class="lead__statement" data-words>Elected <em class="serif">UG Academic Affairs Secretary</em> — the student voice on academics for ~3,500 undergraduates at IIT Mandi. I run the UG Academic Council and build the tools it needs.</p>
     <ul class="chips mono" data-reveal>
       <li><b>12</b> branch councillors selected</li>
       <li><b>15</b> branch-wise orientation sessions</li>
-      <li><b>388</b>-page curriculum booklet for the Board of Academics</li>
-      <li><b>483</b>-response survey for an institute LaTeX platform</li>
-      <li><b>568</b> courses added to the Academic Section site</li>
+      <li><b>~3,500</b> undergraduates represented</li>
     </ul>
     <div class="roles">
-      <div class="role" data-reveal><p class="mono role__when">Jul 2026 – now</p><h3>UG Academic Affairs Secretary</h3><p>Student Gymkhana. Batch 2026 orientation, Board of Academics proposals, the IIT Mandi LaTeX platform, Teachers' Day 2026.</p></div>
+      <div class="role" data-reveal><p class="mono role__when">Jul 2026 – now</p><h3>UG Academic Affairs Secretary</h3><p>Student Gymkhana. Leads the UG Academic Council: picked 12 branch councillors and ran Batch 2026's orientation across 15 branch sessions.</p></div>
       <div class="role" data-reveal><p class="mono role__when">2024 – 2026</p><h3>Batch 2023 Academic Representative</h3><p>UG Academic Council. The bridge between 500+ students and faculty. Co-ran the first post-COVID offline curriculum session; hired the council's web team.</p></div>
       <div class="role" data-reveal><p class="mono role__when">Apr 2026</p><h3>Head of Technical Team, Exodia</h3><p>IIT Mandi's annual cultural fest. Fest tech, ticketing and the gate.</p></div>
       <div class="role" data-reveal><p class="mono role__when">Summer 2026</p><h3>Instructor, HIMSHIKHAR &amp; PRAYAS 4.0</h3><p>22 classes and 40+ hours from DBMS to GenAI, plus an 18-hour ML course. Learners from Class 9 to over 80. Led 8 TAs.</p></div>
