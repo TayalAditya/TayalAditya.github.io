@@ -80,7 +80,7 @@ window.CV_PROJECTS = [
     stack: 'dlib · MediaPipe · OpenCV', link: 'https://github.com/TayalAditya/FaceEngagementCV' },
   { y: '2026', name: 'PlanMyDegree', ctx: 'Solo · 1,741 students', cats: 'institute build',
     desc: 'The degree planner 1,741 IIT Mandi students use: credits, pre-registration with seat caps, timetable clashes, transcript OCR. 30 data models, ~65 API routes, 880+ commits.',
-    stack: 'Next.js · Prisma · PostgreSQL · NextAuth' },
+    stack: 'Next.js · Prisma · PostgreSQL · NextAuth', live: 'https://www.planmydegree.app', liveLabel: 'planmydegree.app' },
   { y: '2026', name: 'LaTeX lecture notes', ctx: 'Solo · study notes', cats: 'build',
     desc: 'Beamer rewrites of IIT Mandi’s Data Structures, DBMS and Python lectures as clean notes.',
     stack: 'LaTeX' },
