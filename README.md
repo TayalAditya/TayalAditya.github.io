@@ -1,6 +1,7 @@
 # tayaladitya.github.io
 
 - [`/cv/`](https://tayaladitya.github.io/cv/) is my CV as a website. It is plain HTML, CSS and JavaScript, with no build step. After editing anything in `cv/`, run `node cv/tools/prerender.js`: it writes the project list into the HTML for search engines and versions the CSS/JS links so browsers never mix old and new files.
+- [`/ib/`](https://tayaladitya.github.io/ib/) is the Integration Bee 2026 Round 2 deck: one self-contained HTML file, no build step. Replace `ib/index.html` to update it.
 - Every other path is handled by the Pi redirect described below.
 
 ## Pi redirect
