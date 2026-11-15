@@ -56,12 +56,23 @@
   var qs = query.toString();
 
   // The Pi's address is handed out by DHCP and moves. Two jobs on the Pi push
-  // it to Pages whenever it changes: tp-live and flp-live, both served from
-  // this same origin. Each publishes only on a change, so whichever published
-  // last saw the latest move, and reading both keeps this working while either
+  // it to GitHub whenever it changes: tp-live and flp-live. Whichever published
+  // last saw the latest move, and reading every copy keeps this working while
   // one has stopped.
+  //
+  // Since 5 November tp-live's Pages site is served from its domain-redirects
+  // branch (the NewShiksha redirects), which the Pi never updates, so the copy
+  // under /tp-live/ froze. The Pi still pushes address.json to main every
+  // quarter hour, so that is read first, straight from GitHub (it allows
+  // cross-origin reads). flp-live now forwards to a Cloudflare tunnel and no
+  // longer names the Pi's address, so it only helps if that changes back.
   var IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
+  var readAddressJson = function (text) {
+    var json = JSON.parse(text);
+    return { address: json.address, published: json.published };
+  };
   var sources = [
+    { url: 'https://raw.githubusercontent.com/TayalAditya/tp-live/main/address.json', read: readAddressJson },
     { url: '/tp-live/address.json', read: function (text) {
       var json = JSON.parse(text);
       return { address: json.address, published: json.published };
@@ -102,7 +113,7 @@
     status.appendChild(document.createTextNode('Going to '));
     status.appendChild(link);
     status.appendChild(document.createTextNode('. The Pi is at ' + best.address +
-      (best.published ? ' (published ' + best.published + ').' : '.')));
+      (best.published ? ' (at this address since ' + best.published + ').' : '.')));
     if (!stay) location.replace(target);
   });
 })();
