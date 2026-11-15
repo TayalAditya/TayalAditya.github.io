@@ -19,7 +19,7 @@
 <main>
   <h1 id="title">Finding the Pi</h1>
   <p id="status">Reading the Pi's current address.</p>
-  <p><small>Open <code>tayaladitya.github.io/ip:PORT</code> to reach the Pi on that port, for example <code>/ip:4011</code> for the leave portal. Anything after the port, such as <code>/ip:8080/login</code>, is carried across. Add <code>?stay</code> to read the address without being redirected. The Pi is on the institute network, so the link works from the campus WiFi only.</small></p>
+  <p><small>Open <code>tayaladitya.github.io/ip:PORT</code> to reach the Pi on that port, for example <code>/ip:4011</code> for the leave portal; <code>/mp05</code> opens Learning Buddy (port 8100). Anything after the port, such as <code>/ip:8080/login</code>, is carried across. Add <code>?stay</code> to read the address without being redirected. The Pi is on the institute network, so the link works from the campus WiFi only.</small></p>
 </main>
 <script>
 (function () {
@@ -29,6 +29,15 @@
   // GitHub Pages has no routing, so every path this site does not serve lands
   // here; the path itself is the request. Some clients send the colon encoded.
   var path = location.pathname.replace(/^\/ip%3A/i, '/ip:');
+  // Named links for apps people open often: /NAME, and anything after it,
+  // goes to that port on the Pi, as if /ip:PORT had been typed.
+  var NAMED = {
+    mp05: '8100'  // Learning Buddy
+  };
+  var named = /^\/([a-z0-9-]+)(\/.*)?$/i.exec(path);
+  if (named && Object.prototype.hasOwnProperty.call(NAMED, named[1].toLowerCase())) {
+    path = '/ip:' + NAMED[named[1].toLowerCase()] + (named[2] || '/');
+  }
   // The port is required. Port 80 on the Pi is the test platform, and a bare
   // /ip landing people there by default was not wanted; nothing opens unless
   // the port is named.
