@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<title>Portals on the Pi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #f5f7f4;
+    --ink: #1f2a24;
+    --muted: #5f6b64;
+    --rule: #d6dcd7;
+    --link: #1e6b46;
+    --led-off: #b9c2bc;
+    --led-on: #1a8f52;
+    --led-on-glow: rgba(26, 143, 82, 0.28);
+    --led-down: #c8203f;
+    --led-down-glow: rgba(200, 32, 63, 0.22);
+    --ok: #1a8f52;    --ok-track: #cfe8d9;
+    --warn: #8a5809;  --warn-track: #f1e2bf;
+    --bad: #c8203f;   --bad-track: #f3cdd4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #121614;
+      --ink: #e6ebe7;
+      --muted: #9aa69f;
+      --rule: #2a332d;
+      --link: #6fd39a;
+      --led-off: #47524b;
+      --led-on: #2fbf71;
+      --led-on-glow: rgba(47, 191, 113, 0.35);
+      --led-down: #f0506b;
+      --led-down-glow: rgba(240, 80, 107, 0.3);
+      --ok: #2fbf71;    --ok-track: #1c3a2a;
+      --warn: #e0a83a;  --warn-track: #3d3116;
+      --bad: #f0506b;   --bad-track: #3f1a22;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.5 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 38rem; margin: 0 auto; }
+  a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; border-radius: 2px; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, monospace; }
+  [hidden] { display: none !important; }
+
+  h1 { font-size: 1.75rem; line-height: 1.15; font-weight: 600; margin: 0 0 0.6rem; letter-spacing: -0.01em; }
+  .lede { margin: 0; color: var(--muted); max-width: 32rem; }
+
+  /* The address is the thing that moves, so it is the biggest thing here. */
+  .address { margin: 2rem 0 2.5rem; }
+  .address .ip {
+    display: inline-flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
+    font-size: 2rem; line-height: 1.1; font-weight: 500; letter-spacing: 0.01em;
+  }
+  .address .ip a { color: inherit; text-decoration-color: var(--rule); text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+  .address .ip a:hover { text-decoration-color: var(--link); }
+  .address button {
+    font: inherit; font-size: 0.85rem; font-family: "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--link); background: none; border: 1px solid var(--rule); border-radius: 999px;
+    padding: 0.15rem 0.7rem; cursor: pointer; vertical-align: middle;
+  }
+  .address button:hover { border-color: var(--link); }
+  .address .when, .address .note { margin: 0.4rem 0 0; color: var(--muted); font-size: 0.95rem; }
+  /* No address to show: say so quietly, and the two links per row collapse to one. */
+  .no-address .address .ip { font: 500 1.05rem/1.4 "IBM Plex Sans", system-ui, sans-serif; color: var(--muted); }
+  .no-address .portal .fixed { display: none; }
+
+  /* The machine: a few figures and two meters, quiet until something is off. */
+  .machine { margin: 0 0 2.5rem; }
+  .machine .group-note { margin-bottom: 0.6rem; }
+  dl.vitals { margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .vital { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.15rem 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid var(--rule); margin: 0; }
+  .vital dt { margin: 0; font-weight: 600; font-size: 0.95rem; }
+  .vital dd { margin: 0; font-size: 0.95rem; }
+  .vital .aside { color: var(--muted); }
+  .vital .aside:not(:empty)::before { content: " \00b7\00a0"; }
+  .vital .flag { font-weight: 600; }
+  .vital[data-state="warn"] .flag { color: var(--warn); }
+  .vital[data-state="bad"] .flag { color: var(--bad); }
+  .meter { position: relative; height: 6px; margin: 0.45rem 0 0.1rem; border-radius: 3px; background: var(--ok-track); overflow: hidden; }
+  .meter .fill { display: block; height: 100%; border-radius: 3px; background: var(--ok); width: 0; transition: width 500ms ease; }
+  .vital[data-state="warn"] .meter { background: var(--warn-track); } .vital[data-state="warn"] .fill { background: var(--warn); }
+  .vital[data-state="bad"] .meter { background: var(--bad-track); } .vital[data-state="bad"] .fill { background: var(--bad); }
+  .machine.stale .meter .fill { opacity: 0.45; }
+  .machine.stale .flag { color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { .meter .fill { transition: none; } }
+  @media (max-width: 420px) { .vital { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+  section { margin: 0 0 2rem; }
+  h2 { font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem; }
+  .group-note { margin: 0 0 0.5rem; color: var(--muted); font-size: 0.95rem; }
+  ul.portals { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  li.portal { padding: 0.9rem 0 0.9rem 1.6rem; border-bottom: 1px solid var(--rule); position: relative; }
+  .portal .head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+  .portal h3 { font-size: 1.05rem; font-weight: 600; margin: 0; flex: 1 1 auto; }
+  .portal .port { color: var(--muted); font-size: 0.95rem; white-space: nowrap; }
+  .portal .state { flex-basis: 100%; margin: 0; font-size: 0.9rem; color: var(--led-down); }
+  .portal .state:empty { display: none; }
+  .portal .desc { margin: 0.15rem 0 0.4rem; color: var(--muted); font-size: 0.95rem; }
+  .portal .links { margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; align-items: baseline; }
+  .portal .direct { font-size: 0.95rem; word-break: break-all; }
+  .portal .fixed { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
+  .portal .alt { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.85rem; }
+
+  /* The link from anywhere: a Cloudflare tunnel, whose own address changes
+     whenever the Pi restarts it, behind a permanent link that forwards to it. */
+  .portal .public { margin: 0.4rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; align-items: baseline; }
+  .portal .public .label { color: var(--muted); font-size: 0.85rem; }
+  .portal .public a { font-size: 0.95rem; word-break: break-all; }
+  .portal .public .tunnel { flex-basis: 100%; margin: 0; font-size: 0.85rem; color: var(--led-down); }
+  .portal .public .tunnel:empty { display: none; }
+  button.copy {
+    font: 0.8rem/1.4 "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--link); background: none; border: 1px solid var(--rule); border-radius: 999px;
+    padding: 0.05rem 0.6rem; cursor: pointer;
+  }
+  button.copy:hover { border-color: var(--link); }
+
+  /* The LED. A Raspberry Pi tells you it is alive with one green light; each
+     site here gets its own. Lit and filled: answered. Lit red and hollow: did
+     not answer (the shape says so too, and the row spells it out). Unlit:
+     nobody knows. */
+  .led {
+    position: absolute; left: 0; top: 1.25rem;
+    width: 0.7rem; height: 0.7rem; border-radius: 50%;
+    background: var(--led-off); border: 2px solid var(--led-off);
+    transition: background-color 400ms ease, border-color 400ms ease, box-shadow 400ms ease;
+  }
+  .led[data-state="up"] { background: var(--led-on); border-color: var(--led-on); box-shadow: 0 0 0 4px var(--led-on-glow); }
+  .led[data-state="down"] { background: transparent; border-color: var(--led-down); box-shadow: 0 0 0 4px var(--led-down-glow); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { .led { transition: none; } }
+  @media (forced-colors: active) { .led { border-color: CanvasText; } .led[data-state="up"] { background: CanvasText; } }
+
+  footer { margin-top: 2.5rem; color: var(--muted); font-size: 0.9rem; }
+  footer p { margin: 0.4rem 0; }
+  @media (max-width: 420px) {
+    body { padding: 2rem 1rem 3rem; font-size: 16px; }
+    .address .ip { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Portals on the Pi</h1>
+  <p class="lede">NewShiksha labs now open at newshiksha.com, independently of the Raspberry Pi. TestPlatform stays on the institute server. This page also lists the remaining campus services and their current Pi status.</p>
+
+  <div class="address">
+    <p class="ip mono"><a id="ip" href="/tp-live/?stay">show the current address</a> <button type="button" id="copy" hidden>copy</button></p>
+    <p class="when" id="when"></p>
+    <p class="note" id="note" hidden></p>
+    <noscript><p class="note">Without JavaScript this page cannot read the Pi's address. Every link below still works: each one forwards to the site's current address.</p></noscript>
+  </div>
+
+  <section class="machine" id="machine" hidden>
+    <h2>The machine</h2>
+    <p class="group-note" id="machine-note"></p>
+    <dl class="vitals">
+      <div class="vital" id="v-disk" data-state="ok">
+        <dt>SD card</dt>
+        <dd><span class="value"></span><span class="aside"></span> <span class="flag"></span>
+          <div class="meter" role="meter" aria-label="SD card used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="fill"></span></div></dd>
+      </div>
+      <div class="vital" id="v-stick" data-state="ok" hidden>
+        <dt>Pen drive</dt>
+        <dd><span class="value"></span><span class="aside"></span> <span class="flag"></span>
+          <div class="meter" role="meter" aria-label="Pen drive used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="fill"></span></div></dd>
+      </div>
+      <div class="vital" id="v-mem" data-state="ok">
+        <dt>Memory</dt>
+        <dd><span class="value"></span><span class="aside"></span> <span class="flag"></span>
+          <div class="meter" role="meter" aria-label="Memory used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="fill"></span></div></dd>
+      </div>
+      <div class="vital" id="v-cpu" data-state="ok">
+        <dt>Processor</dt>
+        <dd><span class="value"></span><span class="aside"></span> <span class="flag"></span></dd>
+      </div>
+      <div class="vital" id="v-wifi" data-state="ok">
+        <dt>Wi-Fi</dt>
+        <dd><span class="value"></span><span class="aside"></span> <span class="flag"></span></dd>
+      </div>
+      <div class="vital" id="v-power" data-state="bad" hidden>
+        <dt>Power</dt>
+        <dd><span class="value">Under-voltage reported: the supply is not keeping up, and the Pi will slow itself down.</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>TestPlatform</h2>
+    <ul class="portals">
+      <!-- Not on the Pi since 2026-10-07: no light, because the Pi cannot vouch
+           for another machine, and a fixed address the script leaves alone. -->
+      <li class="portal" data-url="https://newshiksha.iitmandi.ac.in/">
+        <div class="head"><h3>TestPlatform</h3><span class="port mono">institute server</span></div>
+        <p class="desc">Online examinations: student, teacher and admin desks. Runs on the institute server since 7 October 2026, on the campus network.</p>
+        <p class="links"><a class="direct mono" href="https://newshiksha.iitmandi.ac.in/">https://newshiksha.iitmandi.ac.in/</a> <a class="fixed" href="/tp-live/">permanent link</a></p>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>IIT Mandi LaTeX</h2>
+    <ul class="portals">
+      <li class="portal" data-port="8095">
+        <span class="led" data-state="unknown"></span><span class="sr status">Status unknown.</span>
+        <div class="head"><h3>IIT Mandi LaTeX</h3><span class="port mono">:8095</span><p class="state"></p></div>
+        <p class="desc">The institute's online LaTeX editor, in test. Sign-in is open to a few roll numbers for now.</p>
+        <p class="links"><a class="direct mono" href="/tp-live/?port=8095">open</a> <a class="fixed" href="/tp-live/?port=8095">permanent link</a></p>
+        <p class="public" data-public="latex"><span class="label">from anywhere</span> <a class="mono" href="/tp-live/latex/">https://tayaladitya.github.io/tp-live/latex/</a> <button type="button" class="copy" data-copy="https://tayaladitya.github.io/tp-live/latex/" hidden>copy</button><span class="tunnel"></span></p>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Faculty Leave Portal</h2>
+    <ul class="portals">
+      <li class="portal" data-port="4011" data-scheme="https">
+        <span class="led" data-state="unknown"></span><span class="sr status">Status unknown.</span>
+        <div class="head"><h3>Faculty Leave Portal</h3><span class="port mono">:4011</span><p class="state"></p></div>
+        <p class="desc">Leave requests, approvals and records. It opens over HTTPS with a certificate of its own, so the browser warns once before letting you in.</p>
+        <p class="links"><a class="direct mono" href="/flp-live/">open</a> <a class="fixed" href="/flp-live/">permanent link</a></p>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>DoFA</h2>
+    <ul class="portals">
+      <li class="portal" data-url="https://newshiksha.com/ATaLbench/">
+        <div class="head"><h3>ATaLBench</h3><span class="port mono">newshiksha.com</span><p class="state"></p></div>
+        <p class="desc">The ATL virtual tinkering lab.</p>
+        <p class="links"><a class="direct mono" href="https://newshiksha.com/ATaLbench/">Open ATaLBench</a></p>
+        
+        <p class="alt">Also answers to <code>http://tinkerbench.localnewshiksha.com/</code> where the Wi-Fi carries mDNS.</p>
+      </li>
+      <li class="portal" data-url="https://newshiksha.com/SimulationLab/">
+        <div class="head"><h3>Simulation Lab</h3><span class="port mono">newshiksha.com</span><p class="state"></p></div>
+        <p class="desc">Simulations, served as a static site.</p>
+        <p class="links"><a class="direct mono" href="https://newshiksha.com/SimulationLab/">Open Simulation Lab</a></p>
+        
+      </li>
+      <li class="portal" data-url="https://newshiksha.com/DigitalNCERT/">
+        <div class="head"><h3>NCERT practicals</h3><span class="port mono">newshiksha.com</span><p class="state"></p></div>
+        <p class="desc">Simulations of the NCERT practicals.</p>
+        <p class="links"><a class="direct mono" href="https://newshiksha.com/DigitalNCERT/">Open Digital NCERT</a></p>
+      </li>
+      <li class="portal" data-url="https://newshiksha.com/MechBench/">
+        <div class="head"><h3>MechBench</h3><span class="port mono">newshiksha.com</span><p class="state"></p></div>
+        <p class="desc">The ATL mechanics lab.</p>
+        <p class="links"><a class="direct mono" href="https://newshiksha.com/MechBench/">Open MechBench</a></p>
+        
+      </li>
+      <li class="portal" data-url="https://newshiksha.com/MakerBench/">
+        <div class="head"><h3>MakerBench</h3><span class="port mono">newshiksha.com</span><p class="state"></p></div>
+        <p class="desc">The ATL makers' home.</p>
+        <p class="links"><a class="direct mono" href="https://newshiksha.com/MakerBench/">Open MakerBench</a></p>
+        
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>RASA Materials Lab</h2>
+    <ul class="portals">
+      <li class="portal" data-port="8085">
+        <span class="led" data-state="unknown"></span><span class="sr status">Status unknown.</span>
+        <div class="head"><h3>RASA Materials Lab</h3><span class="port mono">:8085</span><p class="state"></p></div>
+        <p class="desc">The lab's website.</p>
+        <p class="links"><a class="direct mono" href="/tp-live/?port=8085">open</a> <a class="fixed" href="/tp-live/?port=8085">permanent link</a></p>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>This Pi</h2>
+    <ul class="portals">
+      <li class="portal" data-port="8099">
+        <span class="led" data-state="unknown"></span><span class="sr status">Status unknown.</span>
+        <div class="head"><h3>Pi deploys</h3><span class="port mono">:8099</span><p class="state"></p></div>
+        <p class="desc">Which version each site runs, and the log of every deploy. The status page opens from anywhere.</p>
+        <p class="links"><a class="direct mono" href="/tp-live/?port=8099">open</a> <a class="fixed" href="/tp-live/?port=8099">permanent link</a></p>
+        <p class="public"><span class="label">status from anywhere</span> <a class="mono" href="/tp-live/deploy/">https://tayaladitya.github.io/tp-live/deploy/</a> <button type="button" class="copy" data-copy="https://tayaladitya.github.io/tp-live/deploy/" hidden>copy</button></p>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>The sites live on the institute network, so their own links open from the campus Wi-Fi only; each permanent link forwards to the site's current address. The links marked from anywhere go through a Cloudflare tunnel and open from any network. The tunnel's own address changes whenever the Pi restarts it, so share the link shown here, which always forwards to the current one.</p>
+    <p id="status-note">A filled green light means the site answered on the Pi itself; a hollow red one means it did not. The Pi checks every two minutes and reports at least every quarter hour; a change takes up to ten minutes to reach this page.</p>
+    <p>The Pi also answers to <code>aditya.local</code> where the Wi-Fi carries mDNS.</p>
+  </footer>
+</main>
+<script>
+(function () {
+  var LIVE = 'https://raw.githubusercontent.com/TayalAditya/tp-live/main/';
+  var STALE_MINUTES = 90;   // three missed heartbeats, plus the page cache
+
+  function get(url) {
+    return fetch(url, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+  function parseStamp(s) {
+    // "2026-09-15 15:11 UTC", as the Pi writes it.
+    var m = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}) UTC$/.exec(s || '');
+    return m ? new Date(m[1] + 'T' + m[2] + ':00Z') : null;
+  }
+  function minutesSince(d) { return d ? Math.round((Date.now() - d.getTime()) / 60000) : null; }
+  function ago(mins) {
+    if (mins === null) return '';
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + ' min ago';
+    if (mins < 2880) return Math.round(mins / 60) + ' h ago';
+    return Math.round(mins / 1440) + ' days ago';
+  }
+  function when(d) {
+    if (!d) return '';
+    return d.toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' (' + ago(minutesSince(d)) + ')';
+  }
+  function setLed(li, state) {
+    var led = li.querySelector('.led'), sr = li.querySelector('.sr.status'), visible = li.querySelector('.state');
+    led.setAttribute('data-state', state);
+    sr.textContent = state === 'up' ? 'Answered on the Pi.' : state === 'down' ? 'Did not answer on the Pi.' : 'Status unknown.';
+    visible.textContent = state === 'down' ? 'did not answer when the Pi last checked' : '';
+  }
+
+  function gb(bytes) { return (bytes / 1e9).toFixed(1) + ' GB'; }
+  function pct(part, whole) { return whole > 0 ? Math.round(100 * part / whole) : 0; }
+  function num(v) { return typeof v === 'number' && isFinite(v) ? v : null; }
+  function uptime(s) {
+    var d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+    return d > 0 ? d + (d === 1 ? ' day ' : ' days ') + h + ' h' : h > 0 ? h + ' h ' + m + ' min' : m + ' min';
+  }
+  function vital(id, state, value, aside, flag, fraction) {
+    var el = document.getElementById(id);
+    el.setAttribute('data-state', state);
+    el.querySelector('.value').textContent = value;
+    el.querySelector('.aside').textContent = aside || '';
+    el.querySelector('.flag').textContent = flag || '';
+    var meter = el.querySelector('.meter');
+    if (meter) {
+      meter.hidden = fraction === undefined;
+      if (fraction !== undefined) {
+        meter.setAttribute('aria-valuenow', Math.round(fraction * 100));
+        meter.querySelector('.fill').style.width = Math.max(0, Math.min(100, fraction * 100)) + '%';
+      }
+    }
+  }
+  function renderMachine(v, stale) {
+    var box = document.getElementById('machine');
+    box.hidden = false;
+    if (stale) box.classList.add('stale');
+    var reported = minutesSince(parseStamp(v.checked));
+    var note = [];
+    if (v.model) note.push(v.model);
+    if (num(v.uptime_s) !== null) note.push('up ' + uptime(v.uptime_s));
+    if (reported !== null) note.push((stale ? 'as reported ' : 'reported ') + ago(reported));
+    document.getElementById('machine-note').textContent = note.join(', ') + '.';
+
+    function disk(id, total, used, free) {
+      if (total === null || used === null) { vital(id, 'ok', 'not reported'); return; }
+      var p = pct(used, total);
+      vital(id, p >= 92 ? 'bad' : p >= 80 ? 'warn' : 'ok',
+        gb(used) + ' used of ' + gb(total), free !== null ? gb(free) + ' free' : '',
+        p + '% used' + (p >= 92 ? ', nearly full' : p >= 80 ? ', getting full' : ''), used / total);
+    }
+    disk('v-disk', num(v.disk_total), num(v.disk_used), num(v.disk_free));
+    // The LaTeX platform's own disk; absent from reports made before it was added.
+    var stick = document.getElementById('v-stick');
+    stick.hidden = num(v.stick_total) === null;
+    if (!stick.hidden) disk('v-stick', num(v.stick_total), num(v.stick_used), num(v.stick_free));
+    stick.querySelector('.aside').textContent += stick.hidden ? '' : ' · IIT Mandi LaTeX’s own disk';
+
+    var mt = num(v.mem_total), ma = num(v.mem_available);
+    if (mt !== null && ma !== null) {
+      var mu = Math.max(0, mt - ma), mp = pct(mu, mt);
+      var st = num(v.swap_total), sf = num(v.swap_free);
+      var swapping = st !== null && sf !== null && st > 0 && (st - sf) > 0.5 * st;
+      vital('v-mem', (mp >= 95 || swapping) ? 'bad' : mp >= 85 ? 'warn' : 'ok',
+        gb(mu) + ' used of ' + gb(mt), gb(ma) + ' available',
+        mp + '% used' + (mp >= 95 ? ', nearly full' : mp >= 85 ? ', getting full' : '') + (swapping ? ', swapping' : ''), mu / mt);
+    } else { vital('v-mem', 'ok', 'not reported'); }
+
+    var l1 = v.load ? num(v.load[0]) : null, cpus = num(v.cpus), t = num(v.cpu_temp_c);
+    var cpuBits = [], cpuState = 'ok', cpuFlag = [];
+    if (l1 !== null) {
+      cpuBits.push('load ' + l1.toFixed(2) + (cpus ? ' on ' + cpus + ' cores' : ''));
+      if (cpus && l1 >= 2 * cpus) { cpuState = 'bad'; cpuFlag.push('very busy'); }
+      else if (cpus && l1 >= cpus) { cpuState = 'warn'; cpuFlag.push('busy'); }
+    }
+    if (t !== null) {
+      cpuBits.push(t.toFixed(1) + ' \u00b0C');
+      if (t >= 80) { cpuState = 'bad'; cpuFlag.push('hot, will throttle'); }
+      else if (t >= 70) { if (cpuState === 'ok') cpuState = 'warn'; cpuFlag.push('warm'); }
+    }
+    vital('v-cpu', cpuState, cpuBits.length ? cpuBits.join(', ') : 'not reported', '', cpuFlag.join(', '));
+
+    var dbm = num(v.wifi_dbm), mbit = num(v.wifi_mbit);
+    if (dbm !== null) {
+      var grade = dbm >= -60 ? ['ok', 'good signal'] : dbm >= -70 ? ['ok', 'fair signal'] : dbm >= -78 ? ['warn', 'weak signal'] : ['bad', 'very weak signal'];
+      vital('v-wifi', grade[0], (v.wifi_ssid || 'another network') + ', ' + dbm + ' dBm', mbit !== null ? Math.round(mbit) + ' Mbit/s' : '', grade[1]);
+    } else { vital('v-wifi', 'ok', 'not on Wi-Fi'); }
+
+    document.getElementById('v-power').hidden = v.undervoltage !== true;
+  }
+
+  // Copy buttons, shown only where the browser can copy.
+  function copyButton(btn, text) {
+    if (!(navigator.clipboard && navigator.clipboard.writeText)) return;
+    btn.hidden = false;
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = 'copied';
+        setTimeout(function () { btn.textContent = 'copy'; }, 1500);
+      }, function () { btn.textContent = 'could not copy'; });
+    });
+  }
+  var copies = document.querySelectorAll('button.copy[data-copy]'), c;
+  for (c = 0; c < copies.length; c++) copyButton(copies[c], copies[c].getAttribute('data-copy'));
+
+  // The links from anywhere work whatever the Pi's address; each tunnel's
+  // state comes from the file the Pi's deployer keeps beside its page.
+  var tunnels = document.querySelectorAll('p.public[data-public]'), t;
+  for (t = 0; t < tunnels.length; t++) {
+    (function (p) {
+      get(LIVE + p.getAttribute('data-public') + '.json').then(function (j) {
+        if (j && j.up === false) {
+          p.querySelector('.tunnel').textContent = 'The tunnel is down right now' + (j.since ? ' (since ' + j.since + ')' : '') + '; the campus link still works.';
+        }
+      });
+    })(tunnels[t]);
+  }
+
+  Promise.all([get(LIVE + 'address.json'), get(LIVE + 'services.json'), get(LIVE + 'vitals.json')]).then(function (res) {
+    var addr = res[0], svc = res[1], vit = res[2];
+    var ipEl = document.getElementById('ip');
+    var whenEl = document.getElementById('when');
+    var noteEl = document.getElementById('note');
+    var copyBtn = document.getElementById('copy');
+    var statusNote = document.getElementById('status-note');
+    var rows = document.querySelectorAll('li.portal'), i;
+
+    // Either file will do for the address; services.json carries it too.
+    var ip = (addr && addr.address) || (svc && svc.address) || '';
+    if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
+      document.body.classList.add('no-address');
+      ipEl.textContent = 'The address could not be read just now.';
+      ipEl.removeAttribute('href');
+      noteEl.textContent = "The Pi publishes its address to this site and that file did not load. Every link below still works: each one forwards to the site's current address.";
+      noteEl.hidden = false;
+      return;
+    }
+    ipEl.textContent = ip;
+    ipEl.href = 'http://' + ip + '/';
+
+    var since = when(parseStamp(addr && addr.published));
+    var heard = svc ? minutesSince(parseStamp(svc.checked)) : null;
+    if (vit && vit.address === ip) renderMachine(vit, heard === null || heard > STALE_MINUTES);
+    var stale = heard === null || heard > STALE_MINUTES;
+    var line = since ? 'At this address since ' + since + '.' : '';
+    if (heard !== null) line += (line ? ' ' : '') + 'Last heard from the Pi ' + ago(heard) + '.';
+    whenEl.textContent = line;
+    if (stale) {
+      noteEl.textContent = heard === null
+        ? 'The Pi has not said when it last checked in, so the lights below are off.'
+        : 'Nothing from the Pi for ' + ago(heard).replace(' ago', '') + '. It reports at least every quarter hour, so it may be off the network; the lights below are off until it is heard from.';
+      noteEl.hidden = false;
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      copyBtn.hidden = false;
+      copyBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText(ip).then(function () {
+          copyBtn.textContent = 'copied';
+          setTimeout(function () { copyBtn.textContent = 'copy'; }, 1500);
+        }, function () { copyBtn.textContent = 'could not copy'; });
+      });
+    }
+
+    // The two files are fetched separately and can come from different
+    // publishes; a picture taken at another address says nothing about this one.
+    var picture = (!stale && svc && svc.services && svc.address === ip) ? svc.services : null;
+    for (i = 0; i < rows.length; i++) {
+      var li = rows[i], port = li.getAttribute('data-port');
+      if (!port) continue; // a site with a fixed address elsewhere (TestPlatform)
+      var url = (li.getAttribute('data-scheme') || 'http') + '://' + ip + (port === '80' ? '' : ':' + port) + '/';
+      var a = li.querySelector('a.direct');
+      a.href = url; a.textContent = url;
+      var state = picture && picture[port];
+      setLed(li, state === 'up' || state === 'down' ? state : 'unknown');
+    }
+    if (picture) {
+      var asOf = when(parseStamp(svc.as_of));
+      statusNote.textContent = 'A filled green light means the site answered on the Pi itself; a hollow red one means it did not. The Pi checks every two minutes and reports at least every quarter hour; a change takes up to ten minutes to reach this page.' + (asOf ? ' This picture has held since ' + asOf + '.' : '');
+    } else if (!stale) {
+      statusNote.textContent = 'Which sites are answering could not be read for this address, so no lights are lit. The links work regardless.';
+    }
+  });
+})();
+</script>
+</body>
+</html>
