@@ -7,9 +7,9 @@
   <meta name="description" content="A silent, step-by-step stage script for The Last Omen — Aakhri Sanket.">
   <title>The Last Omen · Aakhri Sanket</title>
   <link rel="preload" href="./assets/kaala-darwaza.webp" as="image">
-  <link rel="stylesheet" href="./style.css?v=2">
+  <link rel="stylesheet" href="./style.css?v=3">
   <script src="./script.js" defer></script>
-  <script src="./slideshow.js?v=2" defer></script>
+  <script src="./slideshow.js?v=3" defer></script>
 </head>
 <body>
   <div class="show">
@@ -18,11 +18,15 @@
         <span class="door-mark" aria-hidden="true"></span>
         <span>HS357 <span class="identity-sub">/ Stage script</span></span>
       </a>
+      <div class="slide-status">
+        <span id="slide-count" class="slide-count"></span>
+        <div id="scene-progress" class="scene-progress" aria-hidden="true"></div>
+      </div>
       <div class="tools">
         <button id="scenes-button" class="button utility" type="button" aria-haspopup="dialog">
           <span class="list-icon" aria-hidden="true"></span> Scenes
         </button>
-        <button id="fullscreen-button" class="button utility" type="button" aria-keyshortcuts="F">
+        <button id="fullscreen-button" class="button utility" type="button" aria-label="Fullscreen" aria-keyshortcuts="F">
           <span class="expand-icon" aria-hidden="true"></span> <span id="fullscreen-label">Fullscreen</span>
         </button>
       </div>
@@ -33,32 +37,22 @@
       <div class="candles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
       <div id="slide" class="slide">
         <div class="cover" lang="hi-Latn">
-          <p class="cover-detail">Hinglish horror drama <span aria-hidden="true">·</span> 6 scenes</p>
+          <p class="cover-detail" lang="en">Hinglish horror drama <span aria-hidden="true">·</span> 6 scenes</p>
           <h1 lang="en">The Last<br>Omen</h1>
           <p class="subtitle">Aakhri Sanket</p>
+          <p class="cover-instruction" lang="en">Tap the right half to start</p>
         </div>
       </div>
       <p id="slide-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
-    </main>
-
-    <footer class="show-controls">
-      <div class="slide-status">
-        <span id="slide-count" class="slide-count">01 / 40</span>
-        <div id="scene-progress" class="scene-progress" aria-hidden="true"></div>
-      </div>
-      <div class="keyboard-hints" aria-hidden="true">
-        <span><kbd>←</kbd> <kbd>→</kbd> Slide</span>
-        <span><kbd>F</kbd> Fullscreen</span>
-      </div>
-      <nav class="navigation" aria-label="Slideshow controls">
-        <button id="previous" class="button previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>
-          <span aria-hidden="true">←</span> Previous
+      <nav class="tap-controls" aria-label="Slideshow controls">
+        <button id="previous" class="tap-zone" type="button" aria-label="Previous dialogue" aria-keyshortcuts="ArrowLeft" disabled>
+          <span class="tap-arrow" aria-hidden="true"></span>
         </button>
-        <button id="next" class="button next" type="button" aria-keyshortcuts="ArrowRight Space">
-          <span id="next-label">Start show</span> <span aria-hidden="true">→</span>
+        <button id="next" class="tap-zone" type="button" aria-label="Start show" aria-keyshortcuts="ArrowRight Space">
+          <span class="tap-arrow" aria-hidden="true"></span>
         </button>
       </nav>
-    </footer>
+    </main>
   </div>
 
   <dialog id="scene-dialog" aria-labelledby="scene-dialog-title">

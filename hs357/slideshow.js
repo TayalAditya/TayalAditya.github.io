@@ -1,17 +1,35 @@
 "use strict";
 
+function dialogueSteps(cues, scene) {
+  const groups = [];
+  let group = [];
+  for (const cue of cues) {
+    group.push(cue);
+    if (cue[0] !== "Stage direction") {
+      groups.push(group);
+      group = [];
+    }
+  }
+  if (group.length && groups.length) groups.at(-1).push(...group);
+
+  return groups.map((lines, step) => ({
+    ...scene,
+    step,
+    earlierLines: groups.slice(0, step).flat(),
+    lines,
+  }));
+}
+
+const sceneSteps = scenes.map((scene, index) => dialogueSteps(scene.slides.flat(), {
+  type: "script",
+  title: scene.title,
+  theme: scene.theme,
+  sceneNumber: index + 1,
+}));
 const slides = [
   { type: "cover", theme: "cover" },
-  ...scenes.flatMap((scene, index) => scene.slides.map((lines, step) => ({
-    type: "script",
-    title: scene.title,
-    theme: scene.theme,
-    sceneNumber: index + 1,
-    step,
-    earlierLines: scene.slides.slice(0, step).flat(),
-    lines,
-  }))),
-  { type: "end", theme: "end", title: "The End", lines: closingLines },
+  ...sceneSteps.flat(),
+  ...dialogueSteps(closingLines, { type: "end", theme: "end", title: "The End" }),
 ];
 
 const stage = document.querySelector("#stage");
@@ -22,7 +40,6 @@ const slideCount = document.querySelector("#slide-count");
 const sceneProgress = document.querySelector("#scene-progress");
 const previous = document.querySelector("#previous");
 const next = document.querySelector("#next");
-const nextLabel = document.querySelector("#next-label");
 const sceneDialog = document.querySelector("#scene-dialog");
 const sceneList = document.querySelector("#scene-list");
 const fullscreenButton = document.querySelector("#fullscreen-button");
@@ -38,7 +55,8 @@ function element(tag, className, value) {
 
 const sceneLinks = scenes.map((scene, index) => {
   const number = index + 1;
-  const firstSlide = slides.findIndex((slide) => slide.sceneNumber === number);
+  const steps = sceneSteps[index];
+  const firstSlide = slides.indexOf(steps[0]);
   const item = document.createElement("li");
   const button = element("button", "scene-link");
   button.type = "button";
@@ -52,7 +70,7 @@ const sceneLinks = scenes.map((scene, index) => {
   item.append(button);
   sceneList.append(item);
   const tick = element("span", "scene-tick");
-  tick.style.flexGrow = scene.slides.length;
+  tick.style.flexGrow = steps.length;
   sceneProgress.append(tick);
   return { button, tick, number };
 });
@@ -99,7 +117,7 @@ function fitSlide() {
   const currentLines = script.querySelector(".current-lines");
   const history = script.querySelector(".scene-history");
   const preferredCurrent = width * 0.031;
-  const historyHeight = history ? Math.floor(body.clientHeight * 0.53) : 0;
+  const historyHeight = history ? Math.floor(body.clientHeight * 0.6) : 0;
   const historyGap = history ? parseFloat(getComputedStyle(history).marginBottom) : 0;
   const limit = body.clientHeight - historyHeight - historyGap;
   fitFont(script, "--current-size", preferredCurrent, () => (
@@ -109,7 +127,7 @@ function fitSlide() {
   if (history) {
     const earlierLines = history.firstElementChild;
     const step = slides[current].step;
-    const preferred = preferredCurrent * 0.64 / (1 + (step - 1) * 0.09);
+    const preferred = preferredCurrent * 0.64 / (1 + (step - 1) * 0.044);
     fitFont(script, "--history-size", preferred, () => (
       earlierLines.getBoundingClientRect().height <= Math.min(historyHeight, history.clientHeight)
     ));
@@ -122,6 +140,7 @@ function render(index) {
   const slide = slides[index];
   const isCover = slide.type === "cover";
   const isEnd = slide.type === "end";
+  const atLastStep = index === slides.length - 1;
   stage.dataset.theme = slide.theme;
 
   if (isCover) {
@@ -148,7 +167,7 @@ function render(index) {
       history.append(earlierLines);
       body.append(history);
     }
-    const lines = element("div", "lines current-lines");
+    const lines = element("div", "current-lines");
     lines.append(...slide.lines.map(renderLine));
     body.append(lines);
     script.append(heading, body);
@@ -162,8 +181,8 @@ function render(index) {
   const display = String(index + 1).padStart(2, "0");
   slideCount.textContent = `${display} / ${slides.length}`;
   previous.disabled = isCover;
-  next.disabled = isEnd;
-  nextLabel.textContent = isCover ? "Start show" : isEnd ? "End of show" : "Next";
+  next.disabled = atLastStep;
+  next.setAttribute("aria-label", isCover ? "Start show" : atLastStep ? "End of show" : "Next dialogue");
   sceneLinks.forEach(({ button, tick, number }) => {
     const active = slide.sceneNumber === number;
     if (active) button.setAttribute("aria-current", "step");
@@ -222,7 +241,9 @@ sceneDialog.addEventListener("click", (event) => {
 fullscreenButton.hidden = !document.fullscreenEnabled;
 fullscreenButton.addEventListener("click", toggleFullscreen);
 document.addEventListener("fullscreenchange", () => {
-  fullscreenLabel.textContent = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+  const label = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+  fullscreenLabel.textContent = label;
+  fullscreenButton.setAttribute("aria-label", label);
 });
 window.addEventListener("hashchange", () => render(readSlide()));
 
