@@ -7,9 +7,9 @@
   <meta name="description" content="A silent, step-by-step stage script for The Last Omen — Aakhri Sanket.">
   <title>The Last Omen · Aakhri Sanket</title>
   <link rel="preload" href="./assets/kaala-darwaza.webp" as="image">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css?v=2">
   <script src="./script.js" defer></script>
-  <script src="./slideshow.js" defer></script>
+  <script src="./slideshow.js?v=2" defer></script>
 </head>
 <body>
   <div class="show">
@@ -31,13 +31,14 @@
     <main id="stage" class="stage" data-theme="cover" aria-label="Current slide">
       <div class="stage-art" aria-hidden="true"></div>
       <div class="candles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-      <div id="slide" class="slide" aria-live="polite" aria-atomic="true">
+      <div id="slide" class="slide">
         <div class="cover" lang="hi-Latn">
           <p class="cover-detail">Hinglish horror drama <span aria-hidden="true">·</span> 6 scenes</p>
           <h1 lang="en">The Last<br>Omen</h1>
           <p class="subtitle">Aakhri Sanket</p>
         </div>
       </div>
+      <p id="slide-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
     </main>
 
     <footer class="show-controls">

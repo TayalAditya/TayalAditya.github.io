@@ -2,11 +2,13 @@
 
 const slides = [
   { type: "cover", theme: "cover" },
-  ...scenes.flatMap((scene, index) => scene.slides.map((lines) => ({
+  ...scenes.flatMap((scene, index) => scene.slides.map((lines, step) => ({
     type: "script",
     title: scene.title,
     theme: scene.theme,
     sceneNumber: index + 1,
+    step,
+    earlierLines: scene.slides.slice(0, step).flat(),
     lines,
   }))),
   { type: "end", theme: "end", title: "The End", lines: closingLines },
@@ -14,6 +16,7 @@ const slides = [
 
 const stage = document.querySelector("#stage");
 const slideContent = document.querySelector("#slide");
+const slideAnnouncement = document.querySelector("#slide-announcement");
 const cover = slideContent.firstElementChild;
 const slideCount = document.querySelector("#slide-count");
 const sceneProgress = document.querySelector("#scene-progress");
@@ -72,6 +75,47 @@ function renderLine([speaker, words, direction]) {
   return line;
 }
 
+function fitFont(script, property, preferred, fits) {
+  const setSize = (size) => script.style.setProperty(property, `${size}px`);
+  setSize(preferred);
+  if (fits()) return;
+
+  let low = 0;
+  let high = preferred;
+  while (high - low > 0.2) {
+    const mid = (low + high) / 2;
+    setSize(mid);
+    if (fits()) low = mid;
+    else high = mid;
+  }
+  setSize(low);
+}
+
+function fitSlide() {
+  const script = slideContent.querySelector(".script");
+  const width = stage.clientWidth;
+  if (!script || width === 0) return;
+  const body = script.querySelector(".script-body");
+  const currentLines = script.querySelector(".current-lines");
+  const history = script.querySelector(".scene-history");
+  const preferredCurrent = width * 0.031;
+  const historyHeight = history ? Math.floor(body.clientHeight * 0.53) : 0;
+  const historyGap = history ? parseFloat(getComputedStyle(history).marginBottom) : 0;
+  const limit = body.clientHeight - historyHeight - historyGap;
+  fitFont(script, "--current-size", preferredCurrent, () => (
+    currentLines.getBoundingClientRect().height <= limit
+  ));
+
+  if (history) {
+    const earlierLines = history.firstElementChild;
+    const step = slides[current].step;
+    const preferred = preferredCurrent * 0.64 / (1 + (step - 1) * 0.09);
+    fitFont(script, "--history-size", preferred, () => (
+      earlierLines.getBoundingClientRect().height <= Math.min(historyHeight, history.clientHeight)
+    ));
+  }
+}
+
 function render(index) {
   if (index === current) return;
   current = index;
@@ -94,11 +138,26 @@ function render(index) {
     const title = element("h1", "scene-title", slide.title);
     if (isEnd) title.lang = "en";
     heading.append(title);
-    const lines = element("div", "lines");
+    const body = element("div", "script-body");
+    if (slide.earlierLines?.length) {
+      const history = element("section", "scene-history");
+      history.setAttribute("aria-label", "Earlier in this scene");
+      const earlierLines = element("div", "earlier-lines");
+      earlierLines.style.columnCount = slide.earlierLines.length >= 7 ? 2 : 1;
+      earlierLines.append(...slide.earlierLines.map(renderLine));
+      history.append(earlierLines);
+      body.append(history);
+    }
+    const lines = element("div", "lines current-lines");
     lines.append(...slide.lines.map(renderLine));
-    script.append(heading, lines);
+    body.append(lines);
+    script.append(heading, body);
     slideContent.replaceChildren(script);
   }
+  fitSlide();
+  slideAnnouncement.textContent = isCover
+    ? "The Last Omen. Aakhri Sanket."
+    : `${slide.title}. ${slide.lines.map(([speaker, words]) => `${speaker}. ${words}`).join(" ")}`;
 
   const display = String(index + 1).padStart(2, "0");
   slideCount.textContent = `${display} / ${slides.length}`;
@@ -185,3 +244,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 render(readSlide());
+new ResizeObserver(fitSlide).observe(stage);
