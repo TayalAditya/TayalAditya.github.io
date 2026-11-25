@@ -250,15 +250,6 @@ p, h1, h2, ol { margin: 0; }
   text-shadow: 0 .1em .3em #0008;
 }
 
-.cover-detail {
-  color: #e0e7e3;
-  font-size: clamp(.56rem, 1.55cqw, 1.6rem);
-  font-weight: 600;
-  margin-bottom: 1.5cqw;
-}
-
-.cover-detail span { margin: 0 .3em; }
-
 .cover h1, .ending .scene-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 11.6cqw;
@@ -272,12 +263,6 @@ p, h1, h2, ol { margin: 0; }
   color: #d1dbd7;
   font-size: 3.1cqw;
   font-family: Georgia, "Times New Roman", serif;
-}
-
-.cover-instruction {
-  margin-top: 3cqw;
-  font-size: clamp(.58rem, 1.35cqw, 1.4rem);
-  color: #d1dbd7;
 }
 
 .script {
