@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c151a">
+  <meta name="description" content="A silent, step-by-step stage script for The Last Omen — Aakhri Sanket.">
+  <title>The Last Omen · Aakhri Sanket</title>
+  <link rel="preload" href="./assets/kaala-darwaza.webp" as="image">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+  <script src="./slideshow.js" defer></script>
+</head>
+<body>
+  <div class="show">
+    <header class="toolbar">
+      <a class="identity" href="#" aria-label="The Last Omen, return to title slide">
+        <span class="door-mark" aria-hidden="true"></span>
+        <span>HS357 <span class="identity-sub">/ Stage script</span></span>
+      </a>
+      <div class="tools">
+        <button id="scenes-button" class="button utility" type="button" aria-haspopup="dialog">
+          <span class="list-icon" aria-hidden="true"></span> Scenes
+        </button>
+        <button id="fullscreen-button" class="button utility" type="button" aria-keyshortcuts="F">
+          <span class="expand-icon" aria-hidden="true"></span> <span id="fullscreen-label">Fullscreen</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="stage" class="stage" data-theme="cover" aria-label="Current slide">
+      <div class="stage-art" aria-hidden="true"></div>
+      <div class="candles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <div id="slide" class="slide" aria-live="polite" aria-atomic="true">
+        <div class="cover" lang="hi-Latn">
+          <p class="cover-detail">Hinglish horror drama <span aria-hidden="true">·</span> 6 scenes</p>
+          <h1 lang="en">The Last<br>Omen</h1>
+          <p class="subtitle">Aakhri Sanket</p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="show-controls">
+      <div class="slide-status">
+        <span id="slide-count" class="slide-count">01 / 40</span>
+        <div id="scene-progress" class="scene-progress" aria-hidden="true"></div>
+      </div>
+      <div class="keyboard-hints" aria-hidden="true">
+        <span><kbd>←</kbd> <kbd>→</kbd> Slide</span>
+        <span><kbd>F</kbd> Fullscreen</span>
+      </div>
+      <nav class="navigation" aria-label="Slideshow controls">
+        <button id="previous" class="button previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>
+          <span aria-hidden="true">←</span> Previous
+        </button>
+        <button id="next" class="button next" type="button" aria-keyshortcuts="ArrowRight Space">
+          <span id="next-label">Start show</span> <span aria-hidden="true">→</span>
+        </button>
+      </nav>
+    </footer>
+  </div>
+
+  <dialog id="scene-dialog" aria-labelledby="scene-dialog-title">
+    <div class="dialog-heading">
+      <h2 id="scene-dialog-title">Jump to a scene</h2>
+      <form method="dialog"><button class="button utility" type="submit" aria-label="Close scene list">✕</button></form>
+    </div>
+    <ol id="scene-list" lang="hi-Latn"></ol>
+  </dialog>
+  <noscript><p class="no-script">Enable JavaScript to advance the slideshow.</p></noscript>
+</body>
+</html>
