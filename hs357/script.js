@@ -4,12 +4,12 @@ const scenes = [
     theme: "dream",
     slides: [
       [
-        ["Stage direction", "Stage par andhera. Halki hawa ki awaaz. Diya stage ke centre mein so raha hai."],
-        ["Narrator", "Diya ko har raat wahi sapna aata hai. Aaj bhi woh ghabrakar uth baithta hai."],
+        ["Stage direction", "Stage par andhera. Halki hawa ki awaaz. Diya stage ke centre mein so rahi hai."],
+        ["Narrator", "Diya ko har raat wahi sapna aata hai. Aaj bhi woh ghabrakar uth baithti hai."],
         ["Diya", "Nahi! Nahi! Mujhe wahan nahi jaana!"],
       ],
       [
-        ["Stage direction", "Diya gehri saansein leta hai."],
+        ["Stage direction", "Diya gehri saansein leti hai."],
         ["Maya", "Diya! Kya hua? Phir wahi sapna?", "Room mein aate hue"],
         ["Diya", "Haan... wahi kaala darwaza. Wahi sunsaan registan. Aur woh awaaz..."],
       ],
@@ -18,7 +18,7 @@ const scenes = [
         ["Diya", "Nahi Maya, yeh sirf sapna nahi hai. Har baar woh awaaz mujhe ek hi jagah bulati hai."],
       ],
       [
-        ["Kabir", "Bhai, agar sapne mein koi khazana mil raha hai toh mujhe bhi bata dena. Dosti kis din kaam aayegi?", "Haste hue enter karta hai"],
+        ["Kabir", "Diya, agar sapne mein koi khazana mil raha hai toh mujhe bhi bata dena. Dosti kis din kaam aayegi?", "Haste hue enter karta hai"],
         ["Maya", "Kabir, please! Yeh mazaak ka time nahi hai."],
         ["Kabir", "Main toh bas mahaul halka kar raha tha."],
       ],
@@ -41,7 +41,7 @@ const scenes = [
     slides: [
       [
         ["Stage direction", "Halki neeli roshni. Hawa aur door se kutto ke rone ki awaaz."],
-        ["Narrator", "Diya aur uske saathi ek sunsaan gaon tak pahunchte hain. Yeh wahi jagah hai jo Diya sapne mein dekhta aaya hai."],
+        ["Narrator", "Diya aur uske saathi ek sunsaan gaon tak pahunchte hain. Yeh wahi jagah hai jo Diya sapne mein dekhti aayi hai."],
         ["Kabir", "Ek minute... hum sach mein iss sunsaan jagah par aa gaye hain? Yahan toh network bhi nahi aa raha!"],
       ],
       [
@@ -63,7 +63,7 @@ const scenes = [
       [
         ["The Keeper", "Main iss jagah ka rakhwala hoon. Aur tum logon ko yahan nahi aana chahiye tha."],
         ["Diya", "Hum bas ek jawab dhoondhne aaye hain."],
-        ["The Keeper", "Har jawab ki ek keemat hoti hai, ladke. Kya tum woh keemat chuka paoge?"],
+        ["The Keeper", "Har jawab ki ek keemat hoti hai, ladki. Kya tum woh keemat chuka paogi?"],
       ],
     ],
   },
@@ -125,8 +125,8 @@ const scenes = [
         ["Kabir", "Mujhe bas... ek mauka chahiye tha.", "Dheere se"],
       ],
       [
-        ["The Keeper", "Diya... tum apne sapne ke peeche bhaag rahe ho, lekin tumhe khud nahi pata ki tum usse kyun paana chahte ho."],
-        ["Diya", "Main apni zindagi ka matlab dhoondhna chahta hoon."],
+        ["The Keeper", "Diya... tum apne sapne ke peeche bhaag rahi ho, lekin tumhe khud nahi pata ki tum usse kyun paana chahti ho."],
+        ["Diya", "Main apni zindagi ka matlab dhoondhna chahti hoon."],
       ],
       [
         ["The Keeper", "Aur Zara..."],
@@ -190,29 +190,29 @@ const scenes = [
     theme: "finale",
     slides: [
       [
-        ["Narrator", "Diya zameen par pada ek purana map uthata hai. Shayad iss gaon se nikalne ka raasta usi ke haath mein hai."],
+        ["Narrator", "Diya zameen par pada ek purana map uthati hai. Shayad iss gaon se nikalne ka raasta usi ke haath mein hai."],
         ["Diya", "Shayad yeh map hi humein yahan laaya tha."],
         ["Maya", "Toh ise khatam kar do!"],
       ],
       [
-        ["Stage direction", "Diya map ko phaad deta hai. Achaanak ek tez awaaz hoti hai. Keeper peeche girta hai."],
+        ["Stage direction", "Diya map ko phaad deti hai. Achaanak ek tez awaaz hoti hai. Keeper peeche girta hai."],
         ["The Keeper", "Tum samajhte ho ki tum jeet gaye? Tum sirf ek darwaze ko band kar sakte ho... lekin apne andar ke andhere ko nahi!"],
         ["Kabir", "Bas! Ab aur nahi!"],
       ],
       [
         ["Stage direction", "Sab stage ke exit ki taraf bhaagte hain."],
         ["Zara", "Diya! Jaldi aao!"],
-        ["Narrator", "Diya peeche mudkar dekhta hai. Keeper ab wahan nahi hai."],
+        ["Narrator", "Diya peeche mudkar dekhti hai. Keeper ab wahan nahi hai."],
         ["Diya", "Woh... kahan gaya?"],
       ],
       [
         ["Stage direction", "Lights dheere-dheere off hoti hain."],
-        ["Maya", "Diya! Tum aa rahe ho na?"],
+        ["Maya", "Diya! Tum aa rahi ho na?"],
         ["Stage direction", "Ek second ki khamoshi."],
-        ["Diya", "Haan... main aa raha hoon."],
+        ["Diya", "Haan... main aa rahi hoon."],
       ],
       [
-        ["Stage direction", "Sab exit kar jaate hain. Stage par andhera. Kuch seconds baad Diya akela spotlight mein dikhayi deta hai."],
+        ["Stage direction", "Sab exit kar jaate hain. Stage par andhera. Kuch seconds baad Diya akeli spotlight mein dikhayi deti hai."],
         ["Unknown Voice", "Tumne darwaza band kar diya... lekin kya tumne apna sapna chhod diya?"],
         ["Diya", "Kaun hai?!"],
       ],
